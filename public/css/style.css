@@ -1,0 +1,231 @@
+:root {
+    /*Light mode*/
+    --bg: #ebf0f7;
+    --header: #fbf4f6;
+    --text: #2e2e2f;
+    --white: #fff;
+    --light-grey: #c4cad3;
+    --tag-1: #d6ede2;
+    --tag-1-text: #13854e;
+    --tag-2: #ceecfd;
+    --tag-2-text: #2d86ba;
+    --tag-3: #f2dcf5;
+    --tag-3-text: #a734ba;
+    --purple: #7784ee;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    color: var(--text);
+
+    background-color: var(--bg);
+    width: 100%;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+.board {
+    padding: 2rem;
+    max-width: 75%;
+    width: 100%;
+    display: inline-block;
+}
+.boardTitle {
+    padding: 2rem 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.boardContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    grid-column-gap: 1.5rem;
+}
+.boardListHead {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.boardListHead h2 {
+    font-size: 20px;
+}
+.boardListHead button {
+    background: transparent;
+    color: var(--light-grey);
+    font-size: 18px;
+    border: 0;
+    cursor: pointer;
+}
+.boardTask {
+    cursor: move;
+    background-color: var(--white);
+    padding: 1rem;
+    border-radius: 8px;
+    width: 100%;
+    box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px;
+    margin-bottom: 1rem;
+    border: 3px dashed transparent;
+}
+.boardTask:hover {
+    box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
+    border-color: rgba(162, 179, 207, .2) !important;
+}
+.boardTask p {
+    font-size: 15px;
+    margin: 1.2rem 0;
+}
+.boardTaskTag {
+    border-radius: 100px;
+    padding: 2px 13px;
+    font-size: 12px;
+}
+.boardTaskTag--tag-1 {
+    color: var(--tag-1-text);
+    background-color: var(--tag-1);
+}
+.boardTaskTag--tag-2 {
+    color: var(--tag-2-text);
+    background-color: var(--tag-2);
+}
+.boardTaskTag--tag-3 {
+    color: var(--tag-3-text);
+    background-color: var(--tag-3);
+}
+.boardTaskTags {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.boardTaskMenu {
+    background: transparent;
+    border: 0;
+    color: var(--light-grey);
+    font-size: 17px;
+}
+.boardTaskDetails {
+    position: relative;
+    width: 100%;
+    color: var(--light-grey);
+    font-size: 12px;
+}
+.boardTaskDetails span:not(:last-of-type) {
+    margin-right: 1rem;
+}
+.boardTaskDetails svg {
+    margin-right: 5px;
+}
+
+.boardTask-hover {
+    border: 3px dashed var(--light-grey) !important;
+}
+
+
+.boardTaskProgress {
+    width: 24%;
+    border-right: 1px solid #d9e0e9;
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+    padding: 2rem 3rem;
+}
+.tagProgress {
+    margin: 1.5rem 0;
+}
+.tagProgress h2 {
+    font-size: 16px;
+    margin-bottom: 1rem;
+}
+.tagProgress p {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.tagProgress p span {
+    color: #b4b4b4;
+}
+.tagProgress .progress {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    border-radius: 10px;
+    height: 10px;
+}
+.tagProgress .progress::-webkit-progress-bar, .tagProgress .progress::-webkit-progress-value {
+    border-radius: 10px;
+}
+.tagProgress .progress--copyright::-webkit-progress-bar {
+    background-color: #ecd8e6;
+}
+.tagProgress .progress--copyright::-webkit-progress-value {
+    background: #d459e8;
+}
+.tagProgress .progress--illustration::-webkit-progress-bar {
+    background-color: #dee7e3;
+}
+.tagProgress .progress--illustration::-webkit-progress-value {
+    background-color: #46bd84;
+}
+.tagProgress .progress--design::-webkit-progress-bar {
+    background-color: #d8e7f4;
+}
+.tagProgress .progress--design::-webkit-progress-value {
+    background-color: #08a0f7;
+}
+
+
+
+@media only screen and (max-width: 1300px) {
+    .board {
+        max-width: 100%;
+   }
+    .BoardTaskProgress {
+        width: 100%;
+        display: flex;
+   }
+    /*.tagProgress, .boardTask-activity {
+        flex-basis: 50%;
+        background: var(--white);
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem;
+   }*/
+}
+@media only screen and (max-width: 1000px) {
+    .boardList:nth-child(2), .boardList:nth-child(3) {
+        display: none;
+   }
+    .boardContainer {
+        grid-template-columns: 1fr 1fr;
+   }
+}
+@media only screen and (max-width: 600px) {
+    .boardList:nth-child(4) {
+        display: none;
+   }
+    .boardContainer {
+        grid-template-columns: 1fr;
+   }
+    .BoardTaskProgress {
+        flex-wrap: wrap;
+        padding: 3rem 1rem;
+   }
+   /* .tagProgress, .boardTask-activity {
+        flex-basis: 100%;
+   }
+    h1 {
+        font-size: 25px;
+   }*/
+}
