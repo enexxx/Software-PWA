@@ -83,6 +83,16 @@ nav {
 	border-radius: 0 0 8px 8px;
 	width: 100%;
 }
+.boardListFooter button {
+	background-color: rgba(108, 108, 108, 0.05); /* Green */
+	border: none;
+	margin: 5%;
+	border: 1px solid rgba(108, 108, 108, 0.2);
+	border-radius: 8px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
 .boardListFooter:hover {
     opacity: 80%;
 }
@@ -128,7 +138,7 @@ nav {
 	color: var(--tag-3-text);
 	background-color: var(--tag-3);
 }
-.boardTaskTags {
+.boardTaskHead {
 	width: 100%;
 	display: flex;
 	align-items: center;
@@ -143,18 +153,6 @@ nav {
 }
 .boardTask:hover .boardTaskMenu {
 	opacity: 50%;
-}
-.boardTaskDetails {
-	position: relative;
-	width: 100%;
-	color: var(--light-grey);
-	font-size: 12px;
-}
-.boardTaskDetails span:not(:last-of-type) {
-	margin-right: 1rem;
-}
-.boardTaskDetails svg {
-	margin-right: 5px;
 }
 .boardTask-hover {
 	border: 3px dashed var(--light-grey) !important;
