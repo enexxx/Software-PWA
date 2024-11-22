@@ -4,245 +4,259 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="https://kit.fontawesome.com/29cd7725c3.js" crossorigin="anonymous"></script>
     <title>Kanban app</title>
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="manifest.json"/>
     <link rel="icon" type="image/x-icon" href="images/favicon.png">
 </head>
 
 <body>
     <main>
 
-        <div class='board'>
-            <div class='boardTitle'>
-                <h1>test document</h1>
-            </div>
+        <div class='app'>
+            <nav>
+                <div class='boardTitle'>
+                    <h1>test document</h1>
+                </div>
+            </nav>
 
             <div class='boardContainer'>
                 
                 <div class='boardList'>
+
                     <div class='boardListHeader'>
-                        <h2>Ready</h2>
-                        <button>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button> <!--<i> classes are for font-awesome-->
+                        <h2><i class="fa-solid fa-grid"></i>Ready</h2>
                     </div>
 
-                  
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-1'>tag-1ing</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Konsep hero title yang menarik</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
-                    </div>
-                  
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-2'>UI tag-2</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Icon di section our services</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">>Nov 24</time></span>
-                        </div>
-                    </div>
-                  
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-1'>tag-1ing</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Konsep hero title yang menarik</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">>Nov 24</time></span>
-                        </div>
-                    </div>
+                    <div class="boardListBody">
 
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-2'>Art</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World aaaaaaaaaaaaaaaaaaaa</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
+                        </div>
+                      
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
+                        </div>
+                      
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
+                        </div>
+
+                    </div>
                     
                     <div class='boardListFooter'>
-                        <h2>Add Task</h2>
-                        <button'>
-                            <i class=""></i>
-                        </button>
+                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
                     </div>
 
                 </div>
 
 
                 <div class='boardList'>
+
                     <div class='boardListHeader'>
-                        <h2>In Progress</h2>
-                        <button>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
+                        <h2><i class="fa-solid fa-grid"></i>In Progress</h2>
                     </div>
+
+                    <div class="boardListBody">
+
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
+                        </div>
                         
-
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-2'>UI tag-2</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
-                        <p>Replace lorem ipsum text in the final tag-2s</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">>Nov 24</time></span>
-                        </div>
-                    </div>
-                    
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-3'>tag-3</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Create and generate the custom SVG tag-3s.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
-                    </div>
-                    
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-1'>tag-1ing</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Proof read the legal page and check for and loopholes</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
-                    </div>
-                    
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-3'>tag-3</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Create the landing page graphics for the hero slider.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
-                    </div>
-
-                    
-                </div>
-
-
-                <div class='boardList'>
-                    <div class='boardListHeader'>
-                        <h2>Needs Review</h2>
-                        <button>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                    </div>
-
                         
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-1'>tag-1ing</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
-                        <p>Check the company we copied doesn't think we copied them.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
+                        
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
+                        
                     </div>
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-2'>UI tag-2</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>tag-2 the about page.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
+
+                    <div class='boardListFooter'>
+                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
                     </div>
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-3'>tag-3</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Move that one image 5px down to make Phil Happy.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
-                    </div>
-                
                 
                 </div>
 
 
                 <div class='boardList'>
-                    <div class='boardListHeader'>
-                        <h2>Done</h2>
-                        <button'>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                    </div>
-                    
 
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-3'>tag-3</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
+                    <div class='boardListHeader'>
+                        <h2><i class="fa-solid fa-grid"></i>Needs Review</h2>
+                    </div>
+
+                    <div class="boardListBody">
+
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
-                        <p>Send Advert tag-3s over to production company.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">>Nov 24</time></span>
+
+                                                <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
+                        
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class='boardListFooter'>
+                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
+                    </div>
+
+                </div>
+
+
+                <div class='boardList'>
+
+                    <div class='boardListHeader'>
+                        <h2><i class="fa-solid fa-grid"></i>Done</h2>
                     </div>
                     
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-3'>tag-3</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
+                    <div class="boardListBody">
+
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
-                        <p>Dawn wants to move the text 3px to the right.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
+                        
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
                         </div>
+                        
+                        <div class='boardTask' draggable='true'>
+                            <div class='boardTaskTags'>
+                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
+                                <button class='boardTaskMenu'>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
+                            <p>Hello World</p>
+                            <div class='boardTaskDetails'>
+                                <span><time datetime="2021-11-24T20:00:00">Feb 31</time></span>
+                            </div>
+                        </div>
+
                     </div>
-                    
-                    <div class='boardTask' draggable='true'>
-                        <div class='boardTaskTags'>
-                            <span class='boardTaskTag boardTaskTag--tag-1'>tag-1ing</span>
-                            <button class='boardTaskMenu'>
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </div>
-                        <p>Amend the contract details.</p>
-                        <div class='boardTaskDetails'>
-                            <span><time datetime="2021-11-24T20:00:00">Nov 24</time></span>
-                        </div>
+
+                    <div class='boardListFooter'>
+                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
                     </div>
-                    
-                
+
                 </div>
                 
 
