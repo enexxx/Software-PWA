@@ -15,214 +15,335 @@
     <main>
 
         <div class='app'>
-            <nav>
+            <!--<nav>
+                <ul class="sidePanel">
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Images</span>
+                        </a>
+                    </li>	
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Files</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Games</span>
+                        </a>
+                    </li>	
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Books</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+                    <li>	
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>-->
+
+
+            <div class="board">
                 <div class='boardTitle'>
                     <h1>test document</h1>
                 </div>
-            </nav>
 
-            <div class='boardContainer'>
+                <div class='boardContainer'>
+
                 
-                <div class='boardList'>
+                    <div class='boardList'>
 
-                    <div class='boardListHeader'>
-                        <h2><i class="fa-solid fa-grid"></i>Ready</h2>
+                        <div class='boardListHeader'>
+                            <h2><i class="fa-solid fa-grid"></i>Ready</h2>
+                        </div>
+
+                        <div class="boardListBody">
+
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                        <span class='boardTaskTag boardTaskTag--tag-2'>Dev</span>
+                                        <span class='boardTaskTag boardTaskTag--tag-3'>School</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                        
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                        
+                            <div class='boardTask' draggable='true'>
+                                <p>Hello World</p>
+                            </div>
+
+                        </div>
+                        
+                        <div class='boardListFooter'>
+                            <button><i class="fa-solid fa-plus"></i>Add Task</button>  
+                        </div>
+
                     </div>
 
-                    <div class="boardListBody">
 
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-2'>Art</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World aaaaaaaaaaaaaaaaaaaa</p>
+                    <div class='boardList'>
+
+                        <div class='boardListHeader'>
+                            <h2><i class="fa-solid fa-grid"></i>In Progress</h2>
                         </div>
-                      
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
+
+                        <div class="boardListBody">
+
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
                             </div>
-                            <p>Hello World</p>
+                            
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                            
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                            
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                            
                         </div>
-                      
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
+
+                        <div class='boardListFooter'>
+                            <button><i class="fa-solid fa-plus"></i>Add Task</button>
+                        </div>
+                    
+                    </div>
+
+
+                    <div class='boardList'>
+
+                        <div class='boardListHeader'>
+                            <h2><i class="fa-solid fa-grid"></i>Needs Review</h2>
+                        </div>
+
+                        <div class="boardListBody">
+
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
                             </div>
-                            <p>Hello World</p>
+
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                            
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+
+                        </div>
+
+                        <div class='boardListFooter'>
+                            <button><i class="fa-solid fa-plus"></i>Add Task</button>
+                        </div>
+
+                    </div>
+
+
+                    <div class='boardList'>
+
+                        <div class='boardListHeader'>
+                            <h2><i class="fa-solid fa-grid"></i>Done</h2>
+                        </div>
+                        
+                        <div class="boardListBody">
+
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                            
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+                            
+                            <div class='boardTask' draggable='true'>
+                                <div class="boardTaskHead">
+                                    <div class="boardTaskTitle">
+                                        <span>Title</span>
+                                        <button>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    <div class="boardTaskTags">
+                                        <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
+                                    </div>
+                                </div>
+                                
+                                <p>Hello World</p>
+                            </div>
+
+                        </div>
+
+                        <div class='boardListFooter'>
+                            <button><i class="fa-solid fa-plus"></i>Add Task</button>
                         </div>
 
                     </div>
                     
-                    <div class='boardListFooter'>
-                        <button>
-                            <h2><i class="fa-solid fa-plus"></i>Add Task</h2>  
-                        </button>
-                    </div>
 
                 </div>
-
-
-                <div class='boardList'>
-
-                    <div class='boardListHeader'>
-                        <h2><i class="fa-solid fa-grid"></i>In Progress</h2>
-                    </div>
-
-                    <div class="boardListBody">
-
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                    </div>
-
-                    <div class='boardListFooter'>
-                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
-                    </div>
-                
-                </div>
-
-
-                <div class='boardList'>
-
-                    <div class='boardListHeader'>
-                        <h2><i class="fa-solid fa-grid"></i>Needs Review</h2>
-                    </div>
-
-                    <div class="boardListBody">
-
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-
-                                                <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-
-                    </div>
-
-                    <div class='boardListFooter'>
-                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
-                    </div>
-
-                </div>
-
-
-                <div class='boardList'>
-
-                    <div class='boardListHeader'>
-                        <h2><i class="fa-solid fa-grid"></i>Done</h2>
-                    </div>
-                    
-                    <div class="boardListBody">
-
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-                        
-                        <div class='boardTask' draggable='true'>
-                            <div class='boardTaskHead'>
-                                <span class='boardTaskTag boardTaskTag--tag-1'>Software</span>
-                                <button class='boardTaskMenu'>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            </div>
-                            <p>Hello World</p>
-                        </div>
-
-                    </div>
-
-                    <div class='boardListFooter'>
-                        <h2><i class="fa-solid fa-plus"></i>Add Task</h2>
-                    </div>
-
-                </div>
-                
-
             </div>
         
         </div>
