@@ -13,6 +13,31 @@
 	--tag-3-text: #a734ba;
 	--purple: #7784ee;
 }
+
+:root {
+	--bg: #f9f9f9;
+	--text: #333;
+	--board: #fff;
+	--tag-1: #d6ede2;
+	--tag-1-text: #13854e;
+	--tag-2: #ceecfd;
+	--tag-2-text: #2d86ba;
+	--tag-3: #f2dcf5;
+	--tag-3-text: #a734ba;
+}
+  
+:root.dark-mode {
+	--bg: #1e1e1e;
+	--text: #f0f0f0;
+	--board: #2e2e2e;
+	--tag-1: #d6ede2;
+	--tag-1-text: #13854e;
+	--tag-2: #ceecfd;
+	--tag-2-text: #2d86ba;
+	--tag-3: #f2dcf5;
+	--tag-3-text: #a734ba;
+}
+
 * {
 	margin: 0;
 	padding: 0;
@@ -55,21 +80,21 @@ nav {
 .boardList {
 	width: 19%
 }
-.boardListHeader {
+.boardList header {
 	background-color: #f2f3f5;
 	border: 1px solid rgba(108, 108, 108, 0.2);
 	border-radius: 8px 8px 0 0;
 }
-.boardListHeader h2 {
+.boardList header h2 {
 	font-size: 15px;
 	padding: 0.7rem;
 }
-.boardListHeader i {
+.boardList header i {
     display: inline-block;
     font-size: 10px;
     margin-right: 0.2rem;
 }
-.boardListHeader button {
+.boardList header button {
 	background: transparent;
 	color: var(--light-grey);
 	font-size: 18px;
@@ -86,24 +111,25 @@ nav {
 	border-left: 1px solid rgba(108, 108, 108, 0.2);
 	border-right: 1px solid rgba(108, 108, 108, 0.2);
 }
-.boardListFooter {
+.boardList footer {
 	background-color: #f2f3f5;
 	border: 1px solid rgba(108, 108, 108, 0.2);
 	border-radius: 0 0 8px 8px;
 	width: 100%;
 }
 
-.boardListFooter:hover {
+.boardList footer:hover {
     opacity: 80%;
 }
-.boardListFooter button {
+.addTaskButton {
 	background: none;
 	border: none;
 	font-size: 13px;
+	width: 100%;
 	opacity: 50%;
 	padding: 1rem;
 }
-.boardListFooter i {
+.boardList footer i {
     display: inline-block;
     font-size: 10px;
     margin-right: 0.2rem;

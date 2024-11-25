@@ -15,6 +15,9 @@
     <main>
 
         <div class='app'>
+            <header>
+                <button id="darkModeToggle" aria-label="Toggle dark mode">Toggle Dark Mode</button>
+            </header>
             <!--<nav>
                 <ul class="sidePanel">
                     <li>
@@ -78,10 +81,10 @@
 
                 
                     <div class='boardList'>
-
-                        <div class='boardListHeader'>
-                            <h2><i class="fa-solid fa-grid"></i>Ready</h2>
-                        </div>
+                        <header>
+                            <h2 contenteditable="true">Ready</h2>
+                            <button class="deleteListButton"><i class="fa-solid fa-trash"></i></button>
+                          </header>
 
                         <div class="boardListBody">
 
@@ -89,7 +92,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -99,7 +102,6 @@
                                         <span class='boardTaskTag boardTaskTag--tag-3'>School</span>
                                     </div>
                                 </div>
-                                
                                 <p>Hello World</p>
                             </div>
                         
@@ -107,7 +109,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -115,7 +117,6 @@
                                         <span class='boardTaskTag boardTaskTag--tag-1'>Art</span>
                                     </div>
                                 </div>
-                                
                                 <p>Hello World</p>
                             </div>
                         
@@ -125,18 +126,17 @@
 
                         </div>
                         
-                        <div class='boardListFooter'>
-                            <button><i class="fa-solid fa-plus"></i>Add Task</button>  
-                        </div>
-
+                        <footer>
+                            <button class="addTaskButton"><i class="fa-solid fa-plus"></i>Add Task</button>  
+                        </footer>
                     </div>
 
 
                     <div class='boardList'>
 
-                        <div class='boardListHeader'>
+                        <header>
                             <h2><i class="fa-solid fa-grid"></i>In Progress</h2>
-                        </div>
+                        </header>
 
                         <div class="boardListBody">
 
@@ -144,7 +144,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -160,7 +160,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -176,7 +176,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -192,7 +192,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -206,18 +206,18 @@
                             
                         </div>
 
-                        <div class='boardListFooter'>
-                            <button><i class="fa-solid fa-plus"></i>Add Task</button>
-                        </div>
+                        <footer>
+                            <button class="addTaskButton"><i class="fa-solid fa-plus"></i>Add Task</button>
+                        </footer>
                     
                     </div>
 
 
                     <div class='boardList'>
 
-                        <div class='boardListHeader'>
+                        <header>
                             <h2><i class="fa-solid fa-grid"></i>Needs Review</h2>
-                        </div>
+                        </header>
 
                         <div class="boardListBody">
 
@@ -225,7 +225,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -241,7 +241,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -257,7 +257,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -271,18 +271,18 @@
 
                         </div>
 
-                        <div class='boardListFooter'>
-                            <button><i class="fa-solid fa-plus"></i>Add Task</button>
-                        </div>
+                        <footer>
+                            <button class="addTaskButton"><i class="fa-solid fa-plus"></i>Add Task</button>
+                        </footer>
 
                     </div>
 
 
                     <div class='boardList'>
 
-                        <div class='boardListHeader'>
+                        <header>
                             <h2><i class="fa-solid fa-grid"></i>Done</h2>
-                        </div>
+                        </header>
                         
                         <div class="boardListBody">
 
@@ -290,7 +290,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -306,7 +306,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -322,7 +322,7 @@
                                 <div class="boardTaskHead">
                                     <div class="boardTaskTitle">
                                         <span>Title</span>
-                                        <button>
+                                        <button class="deleteTaskButton">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
                                     </div>
@@ -336,9 +336,9 @@
 
                         </div>
 
-                        <div class='boardListFooter'>
-                            <button><i class="fa-solid fa-plus"></i>Add Task</button>
-                        </div>
+                        <footer>
+                            <button class="addTaskButton"><i class="fa-solid fa-plus"></i>Add Task</button>
+                        </footer>
 
                     </div>
                     
