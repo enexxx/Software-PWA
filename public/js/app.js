@@ -19,12 +19,12 @@ if (localStorage.gettask("darkMode") === "enabled") {
 
 
 
-// ========= Classes ==========
+// ========= Classes ========== //
 class Task {
 
   constructor(title, description=null, id, parentListId) {
       this.title = title;
-      this.description = description;  // A field for a future version, perhaps v2
+      this.description = description;
       this.id = id;
       this.isDone = false;
       this.parentListId = parentListId;
@@ -84,69 +84,76 @@ class List {
   }
 
   update() {
-      for (let _task of this.tasks) {
-          _task.update();
+      for (let task of this.tasks) {
+          task.update();
       }
   }
 
-  rendertasks() {
-      let _newtaskList = document.createElement('ul');
-      _newtaskList.id = this.id + '-ul';
-      for (let _task of this.tasks) {
-          let _newtask = document.createElement('li');
-          _newtask.id = _task.id;
+  renderTasks() {
+      let taskListElement = document.createElement('ul');
+      taskListElement.id = this.id + '-ul';
+      for (let task of this.tasks) {
+          let taskElement = document.createElement('li');
+          taskElement.id = task.id;
           
+
           // task Title
-          let _newtaskTitle = document.createElement('p');
-          _newtaskTitle.innerText = _task.title;
-          _newtaskTitle.classList.add('task-title', 'text-fix', 'unselectable');
+          let taskElementTitle = document.createElement('p');
+          taskElementTitle.innerText = task.title;
+          taskElementTitle.classList.add('taskTitle');
           
+
           // Housing for the edit and delete buttons.
-          let _newtaskButtons = document.createElement('span');
+          let taskElementButtons = document.createElement('span');
+
 
           // Edit button. Allows the user to rename the task.
-          let _newtaskEditButton = document.createElement('i');
-          _newtaskEditButton.ariaHidden = true;
-          _newtaskEditButton.classList.add('fa', 'fa-pencil');
-          _newtaskEditButton.addEventListener('click', () => {
+          let taskElementEditButton = document.createElement('i');
+          taskElementEditButton.ariaHidden = true;
+          taskElementEditButton.classList.add('fa', 'fa-pencil');
+          
+          taskElementEditButton.addEventListener('click', () => {
               
               // List task editing functionality.
-              let _input = document.createElement('textarea');
-              _input.value = _newtaskTitle.textContent;
-              _input.classList.add('task-title');
-              _input.maxLength = 256;
-              _newtaskTitle.replaceWith(_input);
+              let input = document.createElement('textarea');
+              input.value = taskElementTitle.textContent;
+              input.classList.add('task-title');
+              input.maxLength = 256;
+              taskElementTitle.replaceWith(input);
 
               let _save = () => {
-                  _task.title = _input.value;
+                  task.title = input.value;
                   renderList(this.id);
               };
 
-              _input.addEventListener('blur', _save, {
+              input.addEventListener('blur', _save, {
                   once: true,
               });
-              _input.focus();
+              input.focus();
           });
+
 
           // Delete button. ALlows the user to delete the task from the List.
-          let _newtaskDeleteButton = document.createElement('i');
-          _newtaskDeleteButton.ariaHidden = true;
-          _newtaskDeleteButton.classList.add('fa', 'fa-trash');
-          _newtaskDeleteButton.addEventListener('click', () => {
-              createConfirmDialog("Are you sure to delete this task?", () => this.removeTask(_task));
+          let taskElementDeleteButton = document.createElement('i');
+          taskElementDeleteButton.ariaHidden = true;
+          taskElementDeleteButton.classList.add('fa', 'fa-trash');
+          
+          taskElementDeleteButton.addEventListener('click', () => {
+              createConfirmDialog("Are you sure to delete this task?", () => this.removeTask(task));
           });
 
+
           // Add both the buttons to the span tag.
-          _newtaskButtons.appendChild(_newtaskEditButton);
-          _newtaskButtons.appendChild(_newtaskDeleteButton);
+          taskElementButtons.appendChild(taskElementEditButton);
+          taskElementButtons.appendChild(taskElementDeleteButton);
 
           // Add the title, span tag to the task and the task itself to the list.
-          _newtask.appendChild(_newtaskTitle);
-          _newtask.appendChild(_newtaskButtons);
-          _newtaskList.appendChild(_newtask);
+          taskElement.appendChild(taskElementTitle);
+          taskElement.appendChild(taskElementButtons);
+          taskListElement.appendChild(taskElement);
       }
 
-      return _newtaskList;
+      return taskListElement;
   }
 
   generateElement() {
@@ -162,7 +169,7 @@ class List {
       //    </span>
       //    <ul>
       //        <li><p>{this.tasks[0]}</p> <span></span>
-      //        {more_tasks...}
+      //        {moretasks...}
       //    </ul>  
       //  </div>
 
@@ -171,86 +178,88 @@ class List {
       // I should've wrote all this as HTML and put it in the .innerHTML
       // But this gives me more flexibility, so I had to make a choice.
 
-      let _newListHeader = document.createElement('span');
-      let _newListHeaderTitle = document.createElement('h2');
-      _newListHeaderTitle.id = this.id + '-h2';
-      _newListHeaderTitle.innerText = this.name;
-      _newListHeaderTitle.classList.add('text-fix', 'List-title');
+      let listElementHeader = document.createElement('span');
+      let listElementHeaderTitle = document.createElement('h2');
+      listElementHeaderTitle.id = this.id + '-h2';
+      listElementHeaderTitle.innerText = this.name;
+      listElementHeaderTitle.classList.add('text-fix', 'List-title');
 
       // A better, more flexible alternative to contentEditable.
       // We replace the text element with an input element.
-      _newListHeaderTitle.addEventListener('click', (e) => {
-          let _input = document.createElement('input');
-          _input.value = _newListHeaderTitle.textContent;
-          _input.classList.add('List-title');
-          _input.maxLength = 128;
-          _newListHeaderTitle.replaceWith(_input);
+      listElementHeaderTitle.addEventListener('click', (e) => {
+          let input = document.createElement('input');
+          input.value = listElementHeaderTitle.textContent;
+          input.classList.add('List-title');
+          input.maxLength = 128;
+          listElementHeaderTitle.replaceWith(input);
 
           let _save = () => {
-              this.name = _input.value;
+              this.name = input.value;
               renderList(this.id);
           };
 
-          _input.addEventListener('blur', _save, {
+          input.addEventListener('blur', _save, {
               once: true,
           });
-          _input.focus();
+          input.focus();
       });
 
+      /*
       // Hamburger menu icon next to List title to enter List's context menu.
       // *Feature not complete yet.*
-      let _newListHeaderMenu = document.createElement('i');
-      _newListHeaderMenu.ariaHidden = true;
-      _newListHeaderMenu.classList.add("fa", "fa-bars");
-      _newListHeader.append(_newListHeaderTitle);
-      _newListHeader.append(_newListHeaderMenu);
-      _newListHeaderMenu.addEventListener('click', ListContextMenu_show);
+      let listElementHeaderMenu = document.createElement('i');
+      listElementHeaderMenu.ariaHidden = true;
+      listElementHeaderMenu.classList.add("fa", "fa-bars");
+      listElementHeader.append(listElementHeaderTitle);
+      listElementHeader.append(listElementHeaderMenu);
+      listElementHeaderMenu.addEventListener('click', ListContextMenu_show);
+      */
 
       // Input area for typing in the name of new tasks for the List.
-      let _newInput = document.createElement('input');
-      _newInput.id = this.id + '-input';
-      _newInput.maxLength = 256;
-      _newInput.type = 'text';
-      _newInput.name = "add-todo-text";
-      _newInput.placeholder = "Add Task...";
-      _newInput.addEventListener('keyup', (e) => {
-          if (e.code === "Enter") _newButton.click();
+      let listInputElement = document.createElement('input');
+      listInputElement.id = this.id + '-input';
+      listInputElement.maxLength = 256;
+      listInputElement.type = 'text';
+      listInputElement.name = "add-todo-text";
+      listInputElement.placeholder = "Add Task...";
+      listInputElement.addEventListener('keyup', (e) => {
+          if (e.code === "Enter") listButtonElement.click();
       });
 
-      // Button next to input to convert the text from the _newInput into an actual task in the List.
-      let _newButton = document.createElement('button');
-      _newButton.id = this.id + '-button';
-      _newButton.classList.add("plus-button");
-      _newButton.innerText = '+';
-      _newButton.addEventListener('click', () => {
-          let _inputValue = _newInput.value;
-          if (!_inputValue) return createAlert("Type a name for the task!");
-          let _task = new task(_inputValue, null, getBoardFromId(this.parentBoardId).uniqueID(), this.id);
-          this.addTask(_task);
-          _newInput.value = '';
-          _newInput.focus(); // wont because the List is being re-rendered
+      // Button next to input to convert the text from the listInputElement into an actual task in the List.
+      let listButtonElement = document.createElement('button');
+      listButtonElement.id = this.id + '-button';
+      listButtonElement.classList.add("plus-button");
+      listButtonElement.innerText = '+';
+      listButtonElement.addEventListener('click', () => {
+          let inputValue = listInputElement.value;
+          if (!inputValue) return createAlert("Type a name for the task!");
+          let task = new task(inputValue, null, getBoardFromId(this.parentBoardId).uniqueID(), this.id);
+          this.addTask(task);
+          listInputElement.value = '';
+          listInputElement.focus(); // wont because the List is being re-rendered
       });
 
-      let _newList = document.createElement('div');
-      _newList.id = this.id;
-      _newList.classList.add('parent-List');
-      _newList.appendChild(_newListHeader);
+      let listElement = document.createElement('div');
+      listElement.id = this.id;
+      listElement.classList.add('parent-List');
+      listElement.appendChild(listElementHeader);
 
       if (this.tasks) {
           // If the List has tasks in it.
 
           // Render the tasks of the List.
-          let _newtaskList = this.rendertasks();
+          let taskListElement = this.renderTasks();
 
           // Add the list to the List.
-          _newList.appendChild(_newtaskList);
+          listElement.appendChild(taskListElement);
       }
 
       // Add the input and button to add new task at the end.
-      _newList.appendChild(_newInput);
-      _newList.appendChild(_newButton);
+      listElement.appendChild(listInputElement);
+      listElement.appendChild(listButtonElement);
 
-      return _newList;
+      return listElement;
   }
 }
 
@@ -270,17 +279,17 @@ class Board {
   }
 
   addList() {
-      let _ListTitle = e_addListText.value;
-      e_addListText.value = '';
+      let listTitle = addListText.value;  //add list input field's text value
+      addListText.value = '';
   
-      // If the user pressed the button without typing any name, we'll default to "Untitled List {Lists length +1}"
-      if (!_ListTitle) _ListTitle = `Untitled List ${this.Lists.length + 1}`;
+      // If the user created without typing any name
+      if (!listTitle) listTitle = `Untitled List ${this.Lists.length + 1}`;
   
-      let _List = new List(_ListTitle, this.uniqueID(), this.id);
-      this.Lists.push(_List);
+      let list = new List(listTitle, this.uniqueID(), this.id);
+      this.Lists.push(list);
 
-      let _newList = _List.generateElement();
-      e_ListsContainer.insertBefore(_newList, e_ListsContainer.childNodes[e_ListsContainer.childNodes.length - 2]);
+      let listElement = list.generateElement();
+      listsContainer.insertBefore(listElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
   }
 }
 
@@ -397,10 +406,10 @@ document.addEventListener("dragstart", (e) => {
 // Add List
 document.getElementById("addListButton").addEventListener("click", () => {
   const boardContainer = document.querySelector(".boardContainer");
-  const newList = document.createElement("div");
-  newList.className = "boardList";
-  //newList.draggable = true;
-  newList.innerHTML = `
+  const listElement = document.createElement("div");
+  listElement.className = "boardList";
+  //listElement.draggable = true;
+  listElement.innerHTML = `
     <header>
       <h2 contenteditable="true">New List</h2>
       <button class="deleteListButton"><i class="fa-solid fa-trash"></i></button>
@@ -413,13 +422,13 @@ document.getElementById("addListButton").addEventListener("click", () => {
     </footer>
   `;
 
-  boardContainer.appendChild(newList);
+  boardContainer.appendChild(listElement);
 
 
-  const listBody = newList.querySelector(".boardListBody");
+  const listBody = listElement.querySelector(".boardListBody");
 
   // Task adding
-  newList.querySelector(".addTaskButton").addEventListener("click", () => {
+  listElement.querySelector(".addTaskButton").addEventListener("click", () => {
     listBody.appendChild(createTaskElement());
   });
   // Moving tasks
@@ -432,8 +441,8 @@ document.getElementById("addListButton").addEventListener("click", () => {
   
 
   // List deletion
-  newList.querySelector(".deleteListButton").addEventListener("click", () => {
-    newList.remove();
+  listElement.querySelector(".deleteListButton").addEventListener("click", () => {
+    listElement.remove();
   });
 });
 });
