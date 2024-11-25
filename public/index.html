@@ -8,7 +8,6 @@
     <script src="https://kit.fontawesome.com/29cd7725c3.js" crossorigin="anonymous"></script>
     <title>Kanban app</title>
     <link rel="manifest" href="manifest.json"/>
-    <link rel="icon" type="image/x-icon" href="images/favicon.png">
 </head>
 
 <body>
@@ -16,7 +15,8 @@
 
         <div class='app'>
             <header>
-                <button id="darkModeToggle" aria-label="Toggle dark mode">Toggle Dark Mode</button>
+                <button id="darkModeToggle">Toggle Dark Mode</button>
+                <button id="addListButton">addListButton</button>
             </header>
             <!--<nav>
                 <ul class="sidePanel">
@@ -79,7 +79,7 @@
 
                 <div class='boardContainer'>
 
-                
+                <!--
                     <div class='boardList'>
                         <header>
                             <h2 contenteditable="true">Ready</h2>
@@ -130,7 +130,6 @@
                             <button class="addTaskButton"><i class="fa-solid fa-plus"></i>Add Task</button>  
                         </footer>
                     </div>
-
 
                     <div class='boardList'>
 
@@ -212,7 +211,6 @@
                     
                     </div>
 
-
                     <div class='boardList'>
 
                         <header>
@@ -277,7 +275,6 @@
 
                     </div>
 
-
                     <div class='boardList'>
 
                         <header>
@@ -341,36 +338,12 @@
                         </footer>
 
                     </div>
-                    
+                -->
 
                 </div>
             </div>
         
         </div>
-
-
-        <!-- make as sliding side menu, or don't do as all since it doesnt really make sense if you can make your own lists
-        <div class='boardTaskProgress'>
-            <div class='tagProgress'>
-                <h2>Board Progress</h2>
-                
-                <div class='tagProgress'>
-                    <p>tag-1ing <span>3/8</span></p>
-                    <progress class="progress progress--tag-1" max="8" value="3"> 3 </progress>
-                </div>
-
-                <div class='tagProgress'>
-                    <p>tag-3 <span>6/10</span></p>
-                    <progress class="progress progress--tag-3" max="10" value="6"> 6 </progress>
-                </div>
-                
-                <div class='tagProgress'>
-                    <p>UI tag-2 <span>2/7</span></p>
-                    <progress class="progress progress--tag-2" max="7" value="2"> 2 </progress>
-                </div>
-            </div>
-        </div>
-         -->
             
 
     </main>
