@@ -51,15 +51,81 @@ body {
 	min-height: 100vh;
 }
 
-nav {
-	position: fixed;
+
+#sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #233138;
+    overflow-x: hidden;
+    transition: width 0.5s;
+    padding-top: 4rem;
 }
-.sidePanel {
-	margin: 5% 0 0 5%;
-	width: 4rem;
-	border-radius: 10px;
-	box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
+
+#sidebar p {
+    font-size: 1.5rem;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+    text-align: center;
 }
+
+#sidebar p:hover {
+    color: white;
+}
+
+#sidebar > ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#sidebar > ul > li {
+    font-size: 1rem;
+    color: black;
+    background-color: #f3f3f3;
+    padding: 0.5rem;
+    margin-inline: 1em;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 3px 3px var(--primary-color-light);
+}
+
+#sidebar > ul > li.is-active {
+    box-shadow: 3px 3px yellow;
+}
+
+#sidebar > ul > li.is-active:hover {
+    box-shadow: 3px 3px orange;
+}
+
+#sidebar > ul > li:hover {
+    color: var(--primary-color-dark);
+    cursor: pointer;
+    box-shadow: 3px 3px var(--primary-color-dark);
+}
+  
+#sidebar #sidebar-close {
+    color: gray;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 2.25rem;
+    margin-left: 50px;
+}
+
+.sidebarSearchField {
+	display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+
+
 
 
 .board {

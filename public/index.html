@@ -15,68 +15,28 @@
 
         <div class='app'>
             <header>
-                <button id="darkModeToggle">Toggle Dark Mode</button>
+                <button id="sidebarButton">Menu</button>
+                <button id="darkModeToggle">Toggle Dark Mode</button> <!--make in seperate menu, maybe little wswitch in top right-->
                 <button id="addListButton">addListButton</button>
             </header>
-            <!--<nav>
-                <ul class="sidePanel">
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Images</span>
-                        </a>
-                    </li>	
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Files</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Games</span>
-                        </a>
-                    </li>	
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Books</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Notifications</span>
-                        </a>
-                    </li>
-                    <li>	
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
+
+
+            <div id="sidebar">
+                <span id="sidebarClose">x</span>
+                <p>Boards</p>
+                <ul id="boardsList">
+                    <!-- Boards will be listed here... -->
                 </ul>
-            </nav>-->
+    
+                <div class="sidebarSearchField">
+                    <input type="text" id="addBoardText" name="addBoard" placeholder="Add Board...">
+                    <button id="addBoardButton">Add Board</button>
+                </div>
+            </div>
 
 
             <div class="board">
-                <div class='boardTitle'>
-                    <h1>test document</h1>
-                </div>
-
+                <div class='boardTitle'><h1>test document</h1></div>
                 <div class='boardContainer'>
 
                 <!--
