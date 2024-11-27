@@ -16,30 +16,51 @@
         <div class='app'>
             <header>
                 <button id="sidebarButton">Menu</button>
-                <button id="darkModeToggle">Toggle Dark Mode</button> <!--make in seperate menu, maybe little wswitch in top right-->
-                <button id="addListButton">addListButton</button>
+                
+                <h1 id="boardTitle">board title</h1>
+
+                <div id="boardButtons">
+                    <button id="saveButton" class="fa fa-floppy-o"></button>
+                    <button id="deleteButton" class="fa fa-trash"></button>
+                    <button id="darkModeToggle">Toggle Dark Mode</button> <!--make in seperate menu, maybe little switch in top right-->
+                    <!--<button id="addListButton">addListButton</button>  placeholder -->
+                </div>
             </header>
 
 
             <div id="sidebar">
                 <span id="sidebarClose">x</span>
                 <p>Boards</p>
-                <ul id="boardsList">
-                    <!-- Boards will be listed here... -->
-                </ul>
+                <ul id="boardsList"></ul>
     
-                <div class="sidebarSearchField">
-                    <input type="text" id="addBoardText" name="addBoard" placeholder="Add Board...">
+                <div id="sidebarSearchField">
+                    <input type="text" id="addBoardText" placeholder="Add Board...">
                     <button id="addBoardButton">Add Board</button>
                 </div>
             </div>
 
 
+            <div id="boardContainer">
+                <div id="listsContainer">
+                    <div id="addList">
+                        <input maxlength="128" type="text" id="addListInput" placeholder="Add List..." autofocus>
+                        <button id="addListButton">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alertContainer">
+                <div id="alerts">
+                    <!-- alerts go here -->
+                </div>
+            </div>
+
+
+            <!--
             <div class="board">
                 <div class='boardTitle'><h1>test document</h1></div>
                 <div class='boardContainer'>
 
-                <!--
                     <div class='boardList'>
                         <header>
                             <h2 contenteditable="true">Ready</h2>
@@ -298,10 +319,10 @@
                         </footer>
 
                     </div>
-                -->
 
                 </div>
             </div>
+            -->
         
         </div>
             

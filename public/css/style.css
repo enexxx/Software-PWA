@@ -1,20 +1,4 @@
 :root {
-	/*Light mode*/
-	--bg: #f2f5f7;
-	--header: #fbf4f6;
-	--text: #2e2e2f;
-	--white: #fff;
-	--light-grey: #c4cad3;
-	--tag-1: #d6ede2;
-	--tag-1-text: #13854e;
-	--tag-2: #ceecfd;
-	--tag-2-text: #2d86ba;
-	--tag-3: #f2dcf5;
-	--tag-3-text: #a734ba;
-	--purple: #7784ee;
-}
-
-:root {
 	--bg: #f9f9f9;
 	--text: #333;
 	--board: #fff;
@@ -121,7 +105,7 @@ p {
     margin-left: 50px;
 }
 
-.sidebarSearchField {
+#sidebarSearchField {
 	display: flex;
     align-items: center;
     flex-direction: column;

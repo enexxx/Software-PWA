@@ -1,21 +1,156 @@
-// rewrite and format all of this when it is working funcitonally
+const boardContainer = document.getElementById('boardContainer');
+const listsContainer = document.getElementById('listsContainer');
+
+const sidebar = document.getElementById('sidebar');
+const sidebarButton = document.getElementById('sidebarButton');
+const sidebarClose = document.getElementById('sidebarClose');
+
+const addListInput = document.getElementById('addListInput');
+const addListButton = document.getElementById('addListButton');
+
+const boardsList = document.getElementById('boardsList');
+const addBoardText = document.getElementById('addBoardText');
+const addBoardButton = document.getElementById('addBoardButton');
+
+const saveButton = document.getElementById('saveButton');
+const deleteButton = document.getElementById('deleteButton');
+/*
+const autoSaveButton = document.getElementById('autoSave');
+const settingsButton = document.getElementById('settingsButton');
+
+const listContextMenu = document.getElementById('listContextMenu');
+const listContextMenuDelete = document.getElementById('listContextMenuDelete');
+const listContextMenuClear = document.getElementById('listContextMenuClear');
+const listContextMenuDuplicate = document.getElementById('listContextMenuDuplicate');
+*/
+
+const alerts = document.getElementById('alerts');
+
+const title = document.getElementById('boardTitle');
 
 
 
+var appData = {
+  'boards': [],
+  'settings': {
+      'userName': "User",
+      'dataPersistence': true
+  },
+  'currentBoard': 0,
+  'identifier': 0
+};
 
+function currentLists() {
+  return appData.boards[appData.currentBoard].lists;
+}
 
-document.getElementById("darkModeToggle").addEventListener("click", () => {
-  document.documentElement.classList.toggle("dark-mode");
-  const isDarkMode = document.documentElement.classList.contains("dark-mode");
-  localStorage.settask("darkMode", isDarkMode ? "enabled" : "disabled");
-});
-
-// On page load, apply saved mode
-if (localStorage.gettask("darkMode") === "enabled") {
-  document.documentElement.classList.add("dark-mode");
+function currentBoard() {
+  return appData.boards[appData.currentBoard];
 }
 
 
+
+
+// ========= Functions ========= //
+
+function uniqueID() {
+  appData.identifier += 1;
+  return 'b' + appData.identifier;
+}
+
+function getTaskFromElement(element) {
+  /* Get a task object from a list task element. */
+
+  for (let list of currentLists()) {
+      for (let task of list.tasks) {
+          if (task.id === element.id) {
+              return task;
+          }
+      }
+  }
+}
+
+function getListFromElement(element) {
+  return currentLists().find(e => e.id === element.id);
+}
+
+function getBoardFromId(id) {
+  return appData.boards.find(b => b.id === id);
+}
+
+function listBoards() {
+  /* List all the boards in the sidebar. */
+
+  boardsList.innerHTML = '';
+  for (let board of appData.boards) {
+      let boardTitle = document.createElement('li');
+      boardTitle.innerText = board.name;
+      boardTitle.id = board.id;
+      if (board.id === currentBoard().id) boardTitle.classList.add('active');
+      boardTitle.addEventListener('click', () => {
+          renderBoard(board);
+          listBoards();
+      });
+      boardsList.appendChild(boardTitle);
+  }
+}
+
+function renderBoard(board) {
+  appData.currentBoard = appData.boards.indexOf(board);
+  document.title = currentBoard().name;
+  title.innerText = currentBoard().name;
+  renderAllLists();
+}
+
+function renderAllLists() {
+  // Refreshes the whole lists container
+  for (let list of listsContainer.querySelectorAll('.parentList')) {
+      list.remove();
+  }
+
+  for (let list of currentLists()) {
+      let newListElement = list.generateElement();
+      // Insert before the add list button
+      listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+      list.update();
+  }
+}
+
+function renderList(listID) {
+  let list = currentLists().find(e => e.id === listID);
+
+  // Handle deletions
+  if (!list) {
+      let listElement = document.getElementById(listID);
+      listElement.parentNode.removeChild(listElement);
+      return;
+  }
+
+  // Get current list element if it exists.
+  let listElement = document.getElementById(list.id);
+  if (listElement != null) {
+      let newListElement = list.generateElement();
+      listElement.parentNode.replaceChild(newListElement, listElement);
+  }
+  else {
+      let newListElement = list.generateElement();
+      // Insert before the add list button
+      listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+  }
+
+  // Update event listeners
+  list.update();
+}
+
+function addBoard() {
+  let boardTitle = addBoardText.value;
+  if (!boardTitle) boardTitle = "Unititled Board"
+  addBoardText.value = '';
+
+  let newBoard = new Board(boardTitle, uniqueID());
+  appData.boards.push(newBoard);
+  listBoards();
+}
 
 
 
@@ -34,33 +169,10 @@ class Task {
       return document.getElementById(this.parentListId);
   }
 
-  check(chk=true) {
-      this.isDone = chk;
-      if (chk) {
-
-          // Strikethrough the text if clicked on.
-          // NOTE02: Might remove this feature as its not really needed.
-          document.getElementById(this.id).style.textDecoration = 'line-through';
-      } else {
-
-          // Remove the strikethrough from the text.
-          document.getElementById(this.id).style.textDecoration = 'none';
-      }
-  }
-
   update() {
-      let _element = document.getElementById(this.id);
+      let element = document.getElementById(this.id);
 
-      _element.getElementsByTagName('p')[0].addEventListener('click', () => {
-          if (this.isDone) {
-              this.check(false);
-          } else {
-              this.check(true);
-          }
-      });
-
-      _element.addEventListener('mousedown', ListDrag_startDragging, false);
-      this.check(this.isDone);
+      //no functionality yet
   }
 }
 
@@ -97,45 +209,38 @@ class List {
           taskElement.id = task.id;
           
 
-          // task Title
+          // Task title
           let taskElementTitle = document.createElement('p');
           taskElementTitle.innerText = task.title;
           taskElementTitle.classList.add('taskTitle');
-          
 
+/*
           // Housing for the edit and delete buttons.
           let taskElementButtons = document.createElement('span');
 
-
-          // Edit button. Allows the user to rename the task.
+          // Edit button.
           let taskElementEditButton = document.createElement('i');
-          taskElementEditButton.ariaHidden = true;
           taskElementEditButton.classList.add('fa', 'fa-pencil');
-          
+          // Edit functionality
           taskElementEditButton.addEventListener('click', () => {
-              
               // List task editing functionality.
               let input = document.createElement('textarea');
               input.value = taskElementTitle.textContent;
-              input.classList.add('task-title');
+              input.classList.add('taskTitle');
               input.maxLength = 256;
               taskElementTitle.replaceWith(input);
 
-              let _save = () => {
+              let save = () => {
                   task.title = input.value;
                   renderList(this.id);
               };
 
-              input.addEventListener('blur', _save, {
-                  once: true,
-              });
+              input.addEventListener('blur', save, {once: true});
               input.focus();
           });
 
-
           // Delete button. ALlows the user to delete the task from the List.
           let taskElementDeleteButton = document.createElement('i');
-          taskElementDeleteButton.ariaHidden = true;
           taskElementDeleteButton.classList.add('fa', 'fa-trash');
           
           taskElementDeleteButton.addEventListener('click', () => {
@@ -146,10 +251,11 @@ class List {
           // Add both the buttons to the span tag.
           taskElementButtons.appendChild(taskElementEditButton);
           taskElementButtons.appendChild(taskElementDeleteButton);
+*/
 
-          // Add the title, span tag to the task and the task itself to the list.
+          // Add the elements to taskElemente and add taskElement to list
           taskElement.appendChild(taskElementTitle);
-          taskElement.appendChild(taskElementButtons);
+          //taskElement.appendChild(taskElementButtons);
           taskListElement.appendChild(taskElement);
       }
 
@@ -158,20 +264,21 @@ class List {
 
   generateElement() {
 
-      /* The structure of the List element. */
-
-      //  <div class="parent-List">
-      //    <span>
-      //        <h2>
-      //            {this.name}
-      //        </h2>
-      //        <i class="fa fa-bars" aria-hidden="true"></i>
-      //    </span>
-      //    <ul>
-      //        <li><p>{this.tasks[0]}</p> <span></span>
-      //        {moretasks...}
-      //    </ul>  
-      //  </div>
+/*
+    let listElement = document.createElement("div");
+    listElement.className = "boardList";
+    listElement.innerHTML = `
+          <span>
+              <h2>
+                  ${this.name}
+              </h2>
+              <i class="fa fa-bars"></i>
+          </span>
+          <ul>
+              <li>${this.tasks[0]} // make it add all tasks
+          </ul>  
+        `;
+*/
 
       // This was somewhat of a bad idea...
       // Editing the style of the Lists or tasks are made quite difficult.
@@ -182,45 +289,33 @@ class List {
       let listElementHeaderTitle = document.createElement('h2');
       listElementHeaderTitle.id = this.id + '-h2';
       listElementHeaderTitle.innerText = this.name;
-      listElementHeaderTitle.classList.add('text-fix', 'List-title');
+      listElementHeaderTitle.classList.add('ListTitle');
 
-      // A better, more flexible alternative to contentEditable.
-      // We replace the text element with an input element.
+      // Replace the text element with an input element. Better tahn contentEditable
       listElementHeaderTitle.addEventListener('click', (e) => {
           let input = document.createElement('input');
           input.value = listElementHeaderTitle.textContent;
-          input.classList.add('List-title');
+          input.classList.add('ListTitle');
           input.maxLength = 128;
           listElementHeaderTitle.replaceWith(input);
 
-          let _save = () => {
+          let save = () => {
               this.name = input.value;
               renderList(this.id);
           };
 
-          input.addEventListener('blur', _save, {
-              once: true,
-          });
+          input.addEventListener('blur', save, {once: true});
           input.focus();
       });
 
-      /*
-      // Hamburger menu icon next to List title to enter List's context menu.
-      // *Feature not complete yet.*
-      let listElementHeaderMenu = document.createElement('i');
-      listElementHeaderMenu.ariaHidden = true;
-      listElementHeaderMenu.classList.add("fa", "fa-bars");
-      listElementHeader.append(listElementHeaderTitle);
-      listElementHeader.append(listElementHeaderMenu);
-      listElementHeaderMenu.addEventListener('click', ListContextMenu_show);
-      */
-
+           
+      
       // Input area for typing in the name of new tasks for the List.
       let listInputElement = document.createElement('input');
       listInputElement.id = this.id + '-input';
       listInputElement.maxLength = 256;
       listInputElement.type = 'text';
-      listInputElement.name = "add-todo-text";
+      listInputElement.name = "addTaskName";
       listInputElement.placeholder = "Add Task...";
       listInputElement.addEventListener('keyup', (e) => {
           if (e.code === "Enter") listButtonElement.click();
@@ -229,20 +324,21 @@ class List {
       // Button next to input to convert the text from the listInputElement into an actual task in the List.
       let listButtonElement = document.createElement('button');
       listButtonElement.id = this.id + '-button';
-      listButtonElement.classList.add("plus-button");
+      listButtonElement.classList.add("addButton");
       listButtonElement.innerText = '+';
       listButtonElement.addEventListener('click', () => {
           let inputValue = listInputElement.value;
           if (!inputValue) return createAlert("Type a name for the task!");
-          let task = new task(inputValue, null, getBoardFromId(this.parentBoardId).uniqueID(), this.id);
+          let task = new Task(inputValue, null, getBoardFromId(this.parentBoardId).IDGenerator(), this.id);
           this.addTask(task);
           listInputElement.value = '';
           listInputElement.focus(); // wont because the List is being re-rendered
       });
+      
 
       let listElement = document.createElement('div');
       listElement.id = this.id;
-      listElement.classList.add('parent-List');
+      listElement.classList.add('parentList');
       listElement.appendChild(listElementHeader);
 
       if (this.tasks) {
@@ -269,80 +365,192 @@ class Board {
       this.name = name;
       this.id = id;
       this.settings = settings;
-      this.Lists = [];  // All the Lists that are currently in the container as List objects.
+      this.lists = [];  // All the Lists that are currently in the container as List objects.
       this.identifier = identifier === null ? Date.now() : identifier;  // All elements within this board will carry an unqiue id.
   }
 
-  uniqueID() {
+  IDGenerator() {
       this.identifier += 1;
       return 'e' + this.identifier.toString();
   }
 
   addList() {
-      let listTitle = addListText.value;  //add list input field's text value
-      addListText.value = '';
+      let listTitle = addListInput.value;  //add list input field's text value
+      addListInput.value = '';
   
       // If the user created without typing any name
-      if (!listTitle) listTitle = `Untitled List ${this.Lists.length + 1}`;
+      if (!listTitle) listTitle = `Untitled List ${this.lists.length + 1}`;
   
-      let list = new List(listTitle, this.uniqueID(), this.id);
-      this.Lists.push(list);
+      let list = new List(listTitle, this.IDGenerator(), this.id);
+      this.lists.push(list);
 
       let listElement = list.generateElement();
       listsContainer.insertBefore(listElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
   }
 }
 
-
-
-
-
-
-const sidebar = document.getElementById('sidebar');
-const sidebarButton = document.getElementById('sidebarButton');
-const sidebarClose = document.getElementById('sidebarClose');
-
-
-document.addEventListener("DOMContentLoaded", () => {  
-  
-  
-  
-  function toggleSidebar() {
-    if (('toggled' in sidebar.dataset)) {
-        delete sidebar.dataset.toggled;
-        sidebar.style.width = "0";
-        sidebar.style.boxShadow = "unset";
-
-        // Remove listen click outside of side
-        document.removeEventListener('click', listenClickOutside);
-    } 
-    else {
-        sidebar.dataset.toggled = '';
-        sidebar.style.width = "250px";
-        // Listen click outside of sidebar
-        setTimeout(() => {
-            document.addEventListener('click', listenClickOutside);
-        }, 300);
-    }
-  }
-
-  sidebarButton.addEventListener('click', toggleSidebar);
-  sidebarClose.addEventListener('click', toggleSidebar);
-  
-  function listenClickOutside(event) {
-    const _withinBoundaries = event.composedPath().includes(sidebar);
-    if (!_withinBoundaries && sidebar.style.width === "250px") {
-        toggleSidebar();
-    }
+/* < ========= Data Storage ============ > */
+function saveData() {
+  window.localStorage.setItem('kanbanAppData', JSON.stringify(appData));
 }
-  
-  
-  
-  
-  
-  
-  
-  
+
+function getDataFromLocalStorage() {
+  return window.localStorage.getItem('kanbanAppData');
+}
+
+function loadData() {
+  let data = window.localStorage.getItem('kanbanAppData');
+  if (data) {
+      let savedAppData = JSON.parse(data);
+
+      appData.settings = savedAppData.settings;
+      appData.currentBoard = savedAppData.currentBoard >= 0 ? appData.currentBoard : 0;
+      appData.identifier = savedAppData.identifier !== null ? appData.identifier : 0;
+      
+      // Fill the data with boards.
+      for (let board of savedAppData.boards) {
+          let boardElement = new Board(board.name, board.id, board.settings, board.identifier);
+
+          for (let list of board.lists) {
+              let listElement = new List(list.name, list.id, boardElement.id);
+              for (let task of list.tasks) {
+                  let taskElement = new Task(task.title, task.description, task.id, list.id);
+                  listElement.tasks.push(taskElement);
+              }
+              boardElement.lists.push(listElement);
+          }
+          appData.boards.push(boardElement);
+      }
+
+      renderBoard(appData.boards[appData.currentBoard]);
+  } 
+  else {
+      appData.currentBoard = 0;
+      let newBoard = new Board("Untitled Board", 'b0');
+      appData.boards.push(newBoard);
+  }
+  listBoards();
+}
+
+function clearData() {
+  window.localStorage.clear();
+}
+
+loadData();
+
+
+// <=========== Other Events ============>
+
+  addListInput.addEventListener('keyup', (e) => {
+  if (e.code === "Enter") currentBoard().addList();
+});
+
+addListButton.addEventListener('click', () => currentBoard().addList());
+
+addBoardText.addEventListener('keyup', (e) => {
+  if (e.code === "Enter") addBoard();
+});
+
+addBoardButton.addEventListener('click', addBoard);
+
+saveButton.addEventListener('click', () => {saveData(); createAlert("Data successfully saved.")});
+
+deleteButton.addEventListener('click', () => {
+    let boardName = currentBoard().name;
+
+    // Delete the current board.
+    appData.boards.splice(appData.currentBoard, 1);
+    if (appData.currentBoard !== 0) {
+        appData.currentBoard--;
+    }
+
+    if (appData.boards.length === 0) {
+        let newBoard = new Board("Untitled Board", 'b0', {'theme': null});
+        appData.boards.push(newBoard);
+        appData.currentBoard = 0;
+    }
+
+    listBoards();
+    renderBoard(appData.boards[appData.currentBoard]);
+
+    createAlert(`Deleted board "${boardName}"`)
+});
+
+window.onbeforeunload = function () {
+  if (JSON.stringify(appData) !== getDataFromLocalStorage()) {
+      return confirm();
+  }
+}
+
+// rewrite and format all of this when it is working funcitonally
+
+document.getElementById("darkModeToggle").addEventListener("click", () => {
+  document.documentElement.classList.toggle("dark-mode");
+  const isDarkMode = document.documentElement.classList.contains("dark-mode");
+  localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
+});
+
+// On page load, apply saved mode
+if (localStorage.getItem("darkMode") === "enabled") {
+  document.documentElement.classList.add("dark-mode");
+}
+
+
+// <========== Sidebar ===========>
+
+function toggleSidebar() {
+  if (('toggled' in sidebar.dataset)) {
+      delete sidebar.dataset.toggled;
+      sidebar.style.width = "0";
+      sidebar.style.boxShadow = "unset";
+
+      // Remove listen click outside of side
+      document.removeEventListener('click', listenClickOutside);
+  }
+  else {
+      sidebar.dataset.toggled = '';
+      sidebar.style.width = "250px";
+      sidebar.style.boxShadow = "100px 100px 0 100vw rgb(0 0 0 / 50%)";
+      // Listen click outside of sidebar
+      setTimeout(() => {
+          document.addEventListener('click', listenClickOutside);
+      }, 300);
+  }
+}
+
+sidebarButton.addEventListener('click', toggleSidebar);
+sidebarClose.addEventListener('click', toggleSidebar);
+
+function listenClickOutside(event) {
+  const withinBoundaries = event.composedPath().includes(sidebar);
+  if (!withinBoundaries && sidebar.style.width === "250px") {
+      toggleSidebar();
+  }
+}
+
+function createAlert(text) {
+  let div = document.createElement('div');
+  let p = document.createElement('p');
+  p.innerText = text;
+  div.classList.add('alert');
+  div.appendChild(p);
+
+  alerts.appendChild(div);
+  setTimeout(function(){
+    div.classList.add('animateHidden');
+  }, 3500);
+  setTimeout(function(){
+    div.parentNode.removeChild(div);
+  }, 4500);
+}
+
+
+
+
+
+
+/*
+document.addEventListener("DOMContentLoaded", () => {  
   // Task ID counter
   let taskIdCounter = 0;
 
@@ -406,10 +614,10 @@ document.addEventListener("dragstart", (e) => {
 // Add List
 document.getElementById("addListButton").addEventListener("click", () => {
   const boardContainer = document.querySelector(".boardContainer");
-  const listElement = document.createElement("div");
-  listElement.className = "boardList";
-  //listElement.draggable = true;
-  listElement.innerHTML = `
+  const taskListElement = document.createElement("div");
+  taskListElement.className = "boardList";
+  //taskListElement.draggable = true;
+  taskListElement.innerHTML = `
     <header>
       <h2 contenteditable="true">New List</h2>
       <button class="deleteListButton"><i class="fa-solid fa-trash"></i></button>
@@ -422,13 +630,13 @@ document.getElementById("addListButton").addEventListener("click", () => {
     </footer>
   `;
 
-  boardContainer.appendChild(listElement);
+  boardContainer.appendChild(taskListElement);
 
 
-  const listBody = listElement.querySelector(".boardListBody");
+  const listBody = taskListElement.querySelector(".boardListBody");
 
   // Task adding
-  listElement.querySelector(".addTaskButton").addEventListener("click", () => {
+  taskListElement.querySelector(".addTaskButton").addEventListener("click", () => {
     listBody.appendChild(createTaskElement());
   });
   // Moving tasks
@@ -441,8 +649,10 @@ document.getElementById("addListButton").addEventListener("click", () => {
   
 
   // List deletion
-  listElement.querySelector(".deleteListButton").addEventListener("click", () => {
-    listElement.remove();
+  taskListElement.querySelector(".deleteListButton").addEventListener("click", () => {
+    taskListElement.remove();
   });
 });
 });
+
+*/
