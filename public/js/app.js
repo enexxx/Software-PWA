@@ -316,8 +316,7 @@ class List {
       listButton.classList.add("addTaskButton");
       listButton.innerText = '+';
       listButton.addEventListener('click', () => {
-          let taskTitle = `Untitled Task`;
-          let task = new Task(taskTitle, '', getBoardFromId(this.parentBoardId).IDGenerator(), this.id);
+          let task = new Task(`Untitled Task`, 'Placeholder', getBoardFromId(this.parentBoardId).IDGenerator(), this.id);   // TO DO remove the placeholder when the dive is styled to have a minimum width so you can still click on it with no text?
           this.addTask(task);
       });
       listFooter.appendChild(listButton);
