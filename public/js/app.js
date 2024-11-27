@@ -5,7 +5,6 @@ const sidebar = document.getElementById('sidebar');
 const sidebarButton = document.getElementById('sidebarButton');
 const sidebarClose = document.getElementById('sidebarClose');
 
-const addListInput = document.getElementById('addListInput');
 const addListButton = document.getElementById('addListButton');
 
 const boardsList = document.getElementById('boardsList');
@@ -109,7 +108,7 @@ function renderBoard(board) {
 
 function renderAllLists() {
   // Refreshes the whole lists container
-  for (let list of listsContainer.querySelectorAll('.parentList')) {
+  for (let list of listsContainer.querySelectorAll('.taskList')) {
       list.remove();
   }
 
@@ -162,22 +161,22 @@ function addBoard() {
 // ========= Classes ========== //
 class Task {
 
-  constructor(title, description=null, id, parentListId) {
+  constructor(title, body, id, taskListId) {
       this.title = title;
-      this.description = description;
+      this.body = body
       this.id = id;
       this.isDone = false;
-      this.parentListId = parentListId;
+      this.taskListId = taskListId;
   }
 
-  getParentList() {
-      return document.getElementById(this.parentListId);
+  getTaskList() {
+      return document.getElementById(this.taskListId);
   }
 
   update() {
       let element = document.getElementById(this.id);
 
-      //no functionality yet
+      // no functionality yet
   }
 }
 
@@ -208,59 +207,67 @@ class List {
 
   renderTasks() {
       let taskListElement = document.createElement('ul');
-      taskListElement.id = this.id + '-ul';
+      taskListElement.id = 'list-' + this.id;
+
       for (let task of this.tasks) {
           let taskElement = document.createElement('li');
           taskElement.id = task.id;
-          
+          taskElement.className = "task"
 
-          // Task title
-          let taskElementTitle = document.createElement('p');
-          taskElementTitle.innerText = task.title;
-          taskElementTitle.classList.add('taskTitle');
 
-/*
-          // Housing for the edit and delete buttons.
-          let taskElementButtons = document.createElement('span');
+          let taskTitle = document.createElement('p');
+          taskTitle.innerText = task.title;
+          taskTitle.classList.add('taskTitle');
+          taskTitle.addEventListener('click', () => {
+            let input = document.createElement('textarea');
+            input.value = taskTitle.textContent;
+            input.classList.add('taskTitle');
+            input.maxLength = 256;
+            taskTitle.replaceWith(input);
 
-          // Edit button.
-          let taskElementEditButton = document.createElement('i');
-          taskElementEditButton.classList.add('fa', 'fa-pencil');
-          // Edit functionality
-          taskElementEditButton.addEventListener('click', () => {
-              // List task editing functionality.
-              let input = document.createElement('textarea');
-              input.value = taskElementTitle.textContent;
-              input.classList.add('taskTitle');
-              input.maxLength = 256;
-              taskElementTitle.replaceWith(input);
+            let save = () => {
+                task.title = input.value;
+                renderList(this.id);
+            };
 
-              let save = () => {
-                  task.title = input.value;
-                  renderList(this.id);
-              };
-
-              input.addEventListener('blur', save, {once: true});
-              input.focus();
-          });
-
-          // Delete button. ALlows the user to delete the task from the List.
-          let taskElementDeleteButton = document.createElement('i');
-          taskElementDeleteButton.classList.add('fa', 'fa-trash');
-          
-          taskElementDeleteButton.addEventListener('click', () => {
-              createConfirmDialog("Are you sure to delete this task?", () => this.removeTask(task));
+            input.addEventListener('blur', save, {once: true});
+            input.focus();
           });
 
 
-          // Add both the buttons to the span tag.
-          taskElementButtons.appendChild(taskElementEditButton);
-          taskElementButtons.appendChild(taskElementDeleteButton);
-*/
+          // Button container.
+          let taskButtons = document.createElement('span');
+          // Delete task button
+          let taskDeleteButton = document.createElement('i');
+          taskDeleteButton.classList.add('fa-solid', 'fa-trash');
+          taskDeleteButton.addEventListener('click', () => {this.removeTask(task);});
+          taskButtons.appendChild(taskDeleteButton);
 
-          // Add the elements to taskElemente and add taskElement to list
-          taskElement.appendChild(taskElementTitle);
-          //taskElement.appendChild(taskElementButtons);
+
+          let taskBody = document.createElement('p');
+          taskBody.innerText = task.body;
+          taskBody.classList.add('taskBody');
+          taskBody.addEventListener('click', () => {
+            let input = document.createElement('textarea');
+            input.value = taskBody.textContent;
+            input.classList.add('taskBody');
+            taskBody.replaceWith(input);
+
+            let save = () => {
+                task.body = input.value;
+                renderList(this.id);
+            };
+
+            input.addEventListener('blur', save, {once: true});
+            input.focus();
+          });
+
+          
+          // Add the elements to taskElement and add taskElement to list
+          taskElement.appendChild(taskTitle);
+          taskElement.appendChild(taskButtons);
+          taskElement.appendChild(taskBody);
+          
           taskListElement.appendChild(taskElement);
       }
 
@@ -268,41 +275,19 @@ class List {
   }
 
   generateElement() {
-
-/*
-    let listElement = document.createElement("div");
-    listElement.className = "boardList";
-    listElement.innerHTML = `
-          <span>
-              <h2>
-                  ${this.name}
-              </h2>
-              <i class="fa fa-bars"></i>
-          </span>
-          <ul>
-              <li>${this.tasks[0]} // make it add all tasks
-          </ul>  
-        `;
-*/
-
-      // This was somewhat of a bad idea...
-      // Editing the style of the Lists or tasks are made quite difficult.
-      // I should've wrote all this as HTML and put it in the .innerHTML
-      // But this gives me more flexibility, so I had to make a choice.
-
-      let listElementHeader = document.createElement('span');
-      let listElementHeaderTitle = document.createElement('h2');
-      listElementHeaderTitle.id = this.id + '-h2';
-      listElementHeaderTitle.innerText = this.name;
-      listElementHeaderTitle.classList.add('ListTitle');
-
-      // Replace the text element with an input element. Better tahn contentEditable
-      listElementHeaderTitle.addEventListener('click', (e) => {
+      // Header container
+      let listHeader = document.createElement('header');
+      // List title
+      let listTitle = document.createElement('h2');
+      listTitle.id = 'title-' + this.id;
+      listTitle.innerText = this.name;
+      listTitle.classList.add('listTitle');
+      listTitle.addEventListener('click', (e) => {
           let input = document.createElement('input');
-          input.value = listElementHeaderTitle.textContent;
-          input.classList.add('ListTitle');
+          input.value = listTitle.textContent;
+          input.classList.add('listTitle');
           input.maxLength = 128;
-          listElementHeaderTitle.replaceWith(input);
+          listTitle.replaceWith(input);
 
           let save = () => {
               this.name = input.value;
@@ -312,53 +297,42 @@ class List {
           input.addEventListener('blur', save, {once: true});
           input.focus();
       });
-
-           
-      
-      // Input area for typing in the name of new tasks for the List.
-      let listInputElement = document.createElement('input');
-      listInputElement.id = this.id + '-input';
-      listInputElement.maxLength = 256;
-      listInputElement.type = 'text';
-      listInputElement.name = "addTaskName";
-      listInputElement.placeholder = "Add Task...";
-      listInputElement.addEventListener('keyup', (e) => {
-          if (e.code === "Enter") listButtonElement.click();
+      // Delete list button
+      let listDeleteButton = document.createElement('i');
+      listDeleteButton.classList.add('fa-solid', 'fa-trash');
+      listDeleteButton.addEventListener('click', () => {
+        // Remove the card from the cards list based on its index position.
+        currentLists().splice(currentLists().indexOf(this), 1);
+        renderList(this.id);
       });
+      listHeader.appendChild(listTitle);
+      listHeader.appendChild(listDeleteButton);
 
-      // Button next to input to convert the text from the listInputElement into an actual task in the List.
-      let listButtonElement = document.createElement('button');
-      listButtonElement.id = this.id + '-button';
-      listButtonElement.classList.add("addButton");
-      listButtonElement.innerText = '+';
-      listButtonElement.addEventListener('click', () => {
-          let inputValue = listInputElement.value;
-          if (!inputValue) return createAlert("Type a name for the task!");
-          let task = new Task(inputValue, null, getBoardFromId(this.parentBoardId).IDGenerator(), this.id);
+      // Button container.
+      let listFooter = document.createElement('footer');
+      // Add task button
+      let listButton = document.createElement('button');
+      listButton.id = 'button-' + this.id;
+      listButton.classList.add("addTaskButton");
+      listButton.innerText = '+';
+      listButton.addEventListener('click', () => {
+          let taskTitle = `Untitled Task`;
+          let task = new Task(taskTitle, '', getBoardFromId(this.parentBoardId).IDGenerator(), this.id);
           this.addTask(task);
-          listInputElement.value = '';
-          listInputElement.focus(); // wont because the List is being re-rendered
       });
+      listFooter.appendChild(listButton);
       
 
       let listElement = document.createElement('div');
       listElement.id = this.id;
-      listElement.classList.add('parentList');
-      listElement.appendChild(listElementHeader);
-
+      listElement.classList.add('taskList');
+      listElement.appendChild(listHeader);
       if (this.tasks) {
-          // If the List has tasks in it.
-
-          // Render the tasks of the List.
           let taskListElement = this.renderTasks();
-
-          // Add the list to the List.
+          taskListElement.className = "taskListBody"
           listElement.appendChild(taskListElement);
       }
-
-      // Add the input and button to add new task at the end.
-      listElement.appendChild(listInputElement);
-      listElement.appendChild(listButtonElement);
+      listElement.appendChild(listFooter);
 
       return listElement;
   }
@@ -380,11 +354,7 @@ class Board {
   }
 
   addList() {
-      let listTitle = addListInput.value;  //add list input field's text value
-      addListInput.value = '';
-  
-      // If the user created without typing any name
-      if (!listTitle) listTitle = `Untitled List ${this.lists.length + 1}`;
+      let listTitle = `Untitled List ${this.lists.length + 1}`;
   
       let list = new List(listTitle, this.IDGenerator(), this.id);
       this.lists.push(list);
@@ -419,7 +389,7 @@ function loadData() {
           for (let list of board.lists) {
               let listElement = new List(list.name, list.id, boardElement.id);
               for (let task of list.tasks) {
-                  let taskElement = new Task(task.title, task.description, task.id, list.id);
+                  let taskElement = new Task(task.title, task.body, task.id, list.id);
                   listElement.tasks.push(taskElement);
               }
               boardElement.lists.push(listElement);
@@ -445,10 +415,6 @@ loadData();
 
 
 // <=========== Other Events ============>
-
-  addListInput.addEventListener('keyup', (e) => {
-  if (e.code === "Enter") currentBoard().addList();
-});
 
 addListButton.addEventListener('click', () => currentBoard().addList());
 

@@ -2,6 +2,7 @@
 	--bg: #f9f9f9;
 	--text: #333;
 	--board: #fff;
+	--list: #f2f3f5;
 	--tag-1: #d6ede2;
 	--tag-1-text: #13854e;
 	--tag-2: #ceecfd;
@@ -14,6 +15,7 @@
 	--bg: #1e1e1e;
 	--text: #f0f0f0;
 	--board: #2e2e2e;
+	--list: #252525;
 	--tag-1: #d6ede2;
 	--tag-1-text: #13854e;
 	--tag-2: #ceecfd;
@@ -115,64 +117,64 @@ p {
 
 
 
-
-.board {
+#boardTitle {
+	padding: 1rem 0 0 1rem;
+}
+#boardContainer {
 	padding: 2rem;
 	width: 100%;
 	display: inline-block;
 }
 
-.boardTitle {
-	padding: 1rem 0 0 1rem;
-}
-.boardContainer {
+#listsContainer {
 	display: flex;
 	gap: 1.5rem;
 	margin: 2rem;
 	justify-content: start;
 }
-.boardList {
+
+.taskList {
 	width: 19%
 }
-.boardList header {
-	background-color: #f2f3f5;
+.taskList header {
+	background-color: var(--list);
 	border: 1px solid rgba(108, 108, 108, 0.2);
 	border-radius: 8px 8px 0 0;
 }
-.boardList header h2 {
+.taskList header h2 {
 	font-size: 15px;
 	padding: 0.7rem;
 }
-.boardList header i {
+.taskList header i {
     display: inline-block;
     font-size: 10px;
     margin-right: 0.2rem;
 }
-.boardList header button {
+.taskList header button {
 	background: transparent;
 	color: var(--light-grey);
 	font-size: 18px;
 	border: 0;
 	cursor: pointer;
 }
-.boardListBody {
+.taskListBody {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	gap: 0.5rem;
 	padding: 0.5rem;
-	background-color: #f2f3f5;
+	background-color: var(--list);
 	border-left: 1px solid rgba(108, 108, 108, 0.2);
 	border-right: 1px solid rgba(108, 108, 108, 0.2);
 }
-.boardList footer {
-	background-color: #f2f3f5;
+.taskList footer {
+	background-color: var(--list);
 	border: 1px solid rgba(108, 108, 108, 0.2);
 	border-radius: 0 0 8px 8px;
 	width: 100%;
 }
 
-.boardList footer:hover {
+.taskList footer:hover {
     opacity: 80%;
 }
 .addTaskButton {
@@ -183,252 +185,67 @@ p {
 	opacity: 50%;
 	padding: 1rem;
 }
-.boardList footer i {
+.taskList footer i {
     display: inline-block;
     font-size: 10px;
     margin-right: 0.2rem;
 }
-.boardTask {
+
+.task {
 	cursor: move;
+	list-style: none;
 	background-color: var(--white);
 	padding: 0.7rem;
 	border-radius: 8px;
 	width: 100%;
 	border: 2px solid rgba(108, 108, 108, 0.2);
 }
-.boardTask:hover {
+.task:hover {
 	border: 2px dashed rgba(108, 108, 108, 0.5);
 }
-.boardTask p {
+.task p {
 	font-size: 15px;
 }
-.boardTaskTag {
+/*
+.taskTag {
 	border-radius: 100px;
 	padding: 2px 13px;
 	font-size: 10px;
 }
-.boardTaskTag--tag-1 {
+.taskTag--tag-1 {
 	color: var(--tag-1-text);
 	background-color: var(--tag-1);
 }
-.boardTaskTag--tag-2 {
+.taskTag--tag-2 {
 	color: var(--tag-2-text);
 	background-color: var(--tag-2);
 }
-.boardTaskTag--tag-3 {
+.taskTag--tag-3 {
 	color: var(--tag-3-text);
 	background-color: var(--tag-3);
 }
-.boardTaskHead {
+*/
+.taskHead {
 	margin-bottom: 0.7rem;
 }
-.boardTaskTitle {
+.taskTitleContainer {
 	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
-.boardTaskTitle span {
+.taskTitle {
 	font-weight: bolder;
 
 }
-.boardTaskTitle button {
+.taskEditButton {
 	opacity: 0%;
 	background-color: transparent;
 	border: 0;
 	color: var(--light-grey);
 	font-size: 15px;
 }
-.boardTask:hover .boardTaskTitle button {
+.task:hover .taskEditButton {
 	opacity: 50%;
 }
-.boardTask-hover {
-	border: 3px dashed var(--light-grey) !important;
-}
-.boardTaskProgress {
-	width: 24%;
-	border-right: 1px solid #d9e0e9;
-	display: inline-block;
-	height: 100%;
-	vertical-align: top;
-	padding: 2rem 3rem;
-}
-.tagProgress {
-	margin: 1.5rem 0;
-}
-.tagProgress h2 {
-	font-size: 16px;
-	margin-bottom: 1rem;
-}
-.tagProgress p {
-	display: flex;
-	width: 100%;
-	justify-content: space-between;
-}
-.tagProgress p span {
-	color: #b4b4b4;
-}
-.tagProgress .progress {
-	width: 100%;
-	-webkit-appearance: none;
-	appearance: none;
-	border: none;
-	border-radius: 10px;
-	height: 10px;
-}
-.tagProgress .progress::-webkit-progress-bar, .tagProgress .progress::-webkit-progress-value {
-	border-radius: 10px;
-}
-.tagProgress .progress--copyright::-webkit-progress-bar {
-	background-color: #ecd8e6;
-}
-.tagProgress .progress--copyright::-webkit-progress-value {
-	background: #d459e8;
-}
-.tagProgress .progress--illustration::-webkit-progress-bar {
-	background-color: #dee7e3;
-}
-.tagProgress .progress--illustration::-webkit-progress-value {
-	background-color: #46bd84;
-}
-.tagProgress .progress--design::-webkit-progress-bar {
-	background-color: #d8e7f4;
-}
-.tagProgress .progress--design::-webkit-progress-value {
-	background-color: #08a0f7;
-}
-@media only screen and (max-width: 1300px) {
-	.board {
-		max-width: 100%;
-	}
-	.BoardTaskProgress {
-		width: 100%;
-		display: flex;
-	}
-	/*.tagProgress, .boardTask-activity {
-		flex-basis: 50%;
-		background: var(--white);
-		padding: 1rem;
-		border-radius: 8px;
-		margin: 1rem;
-	}
-	*/
-}
-@media only screen and (max-width: 1000px) {
-	.boardList:nth-child(2), .boardList:nth-child(3) {
-		display: none;
-	}
-	.boardContainer {
-		grid-template-columns: 1fr 1fr;
-	}
-}
-@media only screen and (max-width: 600px) {
-	.boardList:nth-child(4) {
-		display: none;
-	}
-	.boardContainer {
-		grid-template-columns: 1fr;
-	}
-	.BoardTaskProgress {
-		flex-wrap: wrap;
-		padding: 3rem 1rem;
-	}
-	/* .tagProgress, .boardTask-activity {
-		flex-basis: 100%;
-	}
-	h1 {
-		font-size: 25px;
-	}
-	*/
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ul {
-	 list-style: none;
-	 margin-left: auto;
-	 margin-right: auto;
-	 background-color: #05043e;
-	 display: flex;
-	 flex-direction: column;
-	 justify-content: space-between;
-	 padding: 0.5rem;
-	 border-radius: 10px;
-	 box-shadow: 0 10px 50px 0 rgba(5, 4, 62, .25);
-}
- li:nth-child(6) {
-	 margin-top: 5rem;
-	 padding-top: 1.25rem;
-	 border-top: 1px solid #363664;
-}
-
-a {
-	 color: #fff;
-	 text-decoration: none;
-	 display: flex;
-	 align-items: center;
-	 justify-content: center;
-	 width: 3rem;
-	 height: 3rem;
-	 border-radius: 8px;
-	 position: relative;
-}
-a:hover, a:focus, a.active {
-	 background-color: #30305a;
-	 outline: 0;
-}
-a:hover span, a:focus span, a.active span {
-	 transform: scale(1);
-	 opacity: 1;
-}
-a i {
-	 font-size: 1.375rem;
-}
-a span {
-	 position: absolute;
-	 background-color: #30305a;
-	 white-space: nowrap;
-	 padding: 0.5rem 1rem;
-	 border-radius: 6px;
-	 left: calc(100% + 1.5rem);
-	 transform-origin: center left;
-	 transform: scale(0);
-	 opacity: 0;
-	 transition: 0.15s ease;
-}
-a span:before {
-	 content: "";
-	 display: block;
-	 width: 12px;
-	 height: 12px;
-	 position: absolute;
-	 background-color: #30305a;
-	 left: -5px;
-	 top: 50%;
-	 transform: translatey(-50%) rotate(45deg);
-	 border-radius: 3px;
-}
-
- 
- @keyframes scale {
-	 0% {
-		 transform: scale(0);
-	}
-	 100% {
-		 transform: scale(1);
-	}
-}
- 
