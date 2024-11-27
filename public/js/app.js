@@ -40,6 +40,11 @@ var appData = {
   'identifier': 0
 };
 
+let autoSaveInternalId = setInterval(function (){
+  saveData();
+}, 5000);
+
+
 function currentLists() {
   return appData.boards[appData.currentBoard].lists;
 }
@@ -404,8 +409,8 @@ function loadData() {
       let savedAppData = JSON.parse(data);
 
       appData.settings = savedAppData.settings;
-      appData.currentBoard = savedAppData.currentBoard >= 0 ? appData.currentBoard : 0;
-      appData.identifier = savedAppData.identifier !== null ? appData.identifier : 0;
+      appData.currentBoard = savedAppData.currentBoard >= 0 ? savedAppData.currentBoard : 0;
+      appData.identifier = savedAppData.identifier !== null ? savedAppData.identifier : 0;
       
       // Fill the data with boards.
       for (let board of savedAppData.boards) {
