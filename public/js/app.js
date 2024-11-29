@@ -53,8 +53,6 @@ function currentBoard() {
 }
 
 
-
-
 // ========= Functions ========= //
 
 function uniqueID() {
@@ -414,6 +412,7 @@ loadData();
 
 
 // <=========== Other Events ============>
+  
 
 addListButton.addEventListener('click', () => currentBoard().addList());
 
@@ -513,10 +512,6 @@ function createAlert(text) {
     div.parentNode.removeChild(div);
   }, 4500);
 }
-
-
-
-
 
 
 /*
