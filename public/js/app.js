@@ -13,7 +13,12 @@ const addBoardButton = document.getElementById('addBoardButton');
 
 const saveButton = document.getElementById('saveButton');
 const deleteButton = document.getElementById('deleteButton');
+
 /*
+const newTagButton = document.getElementById('newTagButton');
+const newTagInput = document.getElementById('newTagInput');
+const newTagColour = document.getElementById('newTagColour');
+
 const autoSaveButton = document.getElementById('autoSave');
 const settingsButton = document.getElementById('settingsButton');
 
@@ -31,12 +36,10 @@ const title = document.getElementById('boardTitle');
 
 var appData = {
   'boards': [],
-  'settings': {
-      'userName': "User",
-      'dataPersistence': true
-  },
   'currentBoard': 0,
-  'identifier': 0
+  'settings': {
+      'userName': "User"
+  }
 };
 
 let autoSaveInternalId = setInterval(function (){
@@ -81,8 +84,6 @@ function getBoardFromId(id) {
 }
 
 function listBoards() {
-  /* List all the boards in the sidebar. */
-
   boardsList.innerHTML = '';
   for (let board of appData.boards) {
       let boardTitle = document.createElement('li');
@@ -101,6 +102,25 @@ function renderBoard(board) {
   appData.currentBoard = appData.boards.indexOf(board);
   document.title = currentBoard().name;
   title.innerText = currentBoard().name;
+  title.addEventListener('click', (e) => {
+    let input = document.createElement('input');
+    input.value = title.textContent;
+    input.classList.add('boardTitle');
+    input.maxLength = 64;
+    title.replaceWith(input);
+
+    let save = () => {
+        currentBoard().name = input.value;
+        document.title = input.value;
+        title.innerText = input.value;
+        input.replaceWith(title);
+        listBoards()
+    };
+
+    input.addEventListener('blur', save, {once: true});
+    input.focus();
+});
+
   renderAllLists();
 }
 
@@ -114,7 +134,6 @@ function renderAllLists() {
       let newListElement = list.generateElement();
       // Insert before the add list button
       listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
-      list.update();
   }
 }
 
@@ -140,8 +159,6 @@ function renderList(listID) {
       listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
   }
 
-  // Update event listeners
-  list.update();
 }
 
 function addBoard() {
@@ -157,24 +174,43 @@ function addBoard() {
 
 
 // ========= Classes ========== //
-class Task {
+class Board {
 
-  constructor(title, body, id, taskListId) {
-      this.title = title;
-      this.body = body
+  constructor(name, id, tags, identifier=0) {
+      this.name = name;
       this.id = id;
-      this.isDone = false;
-      this.taskListId = taskListId;
+      this.lists = [];
+      this.tags = tags;
+      this.identifier = identifier === null ? Date.now() : identifier;
   }
 
-  getTaskList() {
-      return document.getElementById(this.taskListId);
+  IDGenerator() {
+      this.identifier += 1;
+      return 'e' + this.identifier.toString();
   }
 
-  update() {
-      let element = document.getElementById(this.id);
+  addList() {
+      let listTitle = 'Untitled List';
+  
+      let list = new List(listTitle, this.IDGenerator(), this.id);
+      this.lists.push(list);
 
-      // no functionality yet
+      let listElement = list.generateElement();
+      listsContainer.insertBefore(listElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+  }
+
+  addTag(tag) {
+    if (!this.tags.find(t => t.name === tag.name)) {
+        this.tags.push(tag);
+    }
+  }
+
+  findTag(tagName) {
+    return this.tags.find(t => t.name === tagName)
+  }
+
+  removeTag(tagName) {
+    this.tags = this.tags.filter(tag => tag.name !== tagName);
   }
 }
 
@@ -197,12 +233,6 @@ class List {
       renderList(this.id);
   }
 
-  update() {
-      for (let task of this.tasks) {
-          task.update();
-      }
-  }
-
   renderTasks() {
       let taskListElement = document.createElement('ul');
       taskListElement.id = 'list-' + this.id;
@@ -216,54 +246,46 @@ class List {
           let taskTitle = document.createElement('p');
           taskTitle.innerText = task.title;
           taskTitle.classList.add('taskTitle');
-          taskTitle.addEventListener('click', () => {
-            let input = document.createElement('textarea');
-            input.value = taskTitle.textContent;
-            input.classList.add('taskTitle');
-            input.maxLength = 256;
-            taskTitle.replaceWith(input);
 
-            let save = () => {
-                task.title = input.value;
-                renderList(this.id);
-            };
 
-            input.addEventListener('blur', save, {once: true});
-            input.focus();
+          let taskButtons = document.createElement('span');
+          taskButtons.classList.add('taskButtons');
+
+          let taskDeleteButton = document.createElement('i');
+          taskDeleteButton.classList.add('taskDeleteButton', 'fa-solid', 'fa-trash');
+          taskDeleteButton.addEventListener('click', () => {this.removeTask(task);});
+
+          let taskEditButton = document.createElement('i');
+          taskEditButton.classList.add('taskEditButton', 'fa-solid', 'fa-pen');
+          taskEditButton.addEventListener('click', () => {
+            task.editTask();
           });
 
-
-          // Button container.
-          let taskButtons = document.createElement('span');
-          // Delete task button
-          let taskDeleteButton = document.createElement('i');
-          taskDeleteButton.classList.add('fa-solid', 'fa-trash');
-          taskDeleteButton.addEventListener('click', () => {this.removeTask(task);});
           taskButtons.appendChild(taskDeleteButton);
+          taskButtons.appendChild(taskEditButton);
 
 
+          let taskTags = document.createElement('span');
+          taskTags.classList.add('taskTags');
+          for (let tagName of task.tags) {
+              let tag = currentBoard().findTag(tagName);
+              let tagElement = document.createElement('span');
+              tagElement.classList.add('taskTag');
+              tagElement.innerText = tag.name;
+              tagElement.style.backgroundColor = tag.colour;
+
+              taskTags.appendChild(tagElement);
+          }
+
+          
           let taskBody = document.createElement('p');
           taskBody.innerText = task.body;
           taskBody.classList.add('taskBody');
-          taskBody.addEventListener('click', () => {
-            let input = document.createElement('textarea');
-            input.value = taskBody.textContent;
-            input.classList.add('taskBody');
-            taskBody.replaceWith(input);
-
-            let save = () => {
-                task.body = input.value;
-                renderList(this.id);
-            };
-
-            input.addEventListener('blur', save, {once: true});
-            input.focus();
-          });
-
           
-          // Add the elements to taskElement and add taskElement to list
+
           taskElement.appendChild(taskTitle);
           taskElement.appendChild(taskButtons);
+          taskElement.appendChild(taskTags);
           taskElement.appendChild(taskBody);
           
           taskListElement.appendChild(taskElement);
@@ -289,6 +311,7 @@ class List {
 
           let save = () => {
               this.name = input.value;
+              if (this.name.length === 0) this.name = 'Untitled List'
               renderList(this.id);
           };
 
@@ -297,7 +320,7 @@ class List {
       });
       // Delete list button
       let listDeleteButton = document.createElement('i');
-      listDeleteButton.classList.add('fa-solid', 'fa-trash');
+      listDeleteButton.classList.add('listDeleteButton', 'fa-solid', 'fa-trash');
       listDeleteButton.addEventListener('click', () => {
         // Remove the card from the cards list based on its index position.
         currentLists().splice(currentLists().indexOf(this), 1);
@@ -314,8 +337,11 @@ class List {
       listButton.classList.add("addTaskButton");
       listButton.innerText = '+';
       listButton.addEventListener('click', () => {
-          let task = new Task(`Untitled Task`, 'Placeholder', getBoardFromId(this.parentBoardId).IDGenerator(), this.id);   // TO DO remove the placeholder when the dive is styled to have a minimum width so you can still click on it with no text?
+          let task = new Task('', '', getBoardFromId(this.parentBoardId).IDGenerator(), [], this.id);
           this.addTask(task);
+          setTimeout(() => {  // messy fix but it works
+            task.editTask();
+          }, 0);
       });
       listFooter.appendChild(listButton);
       
@@ -333,33 +359,174 @@ class List {
 
       return listElement;
   }
+
 }
 
-class Board {
+class Task {
 
-  constructor(name, id, settings, identifier=0) {
-      this.name = name;
+  constructor(title, body, id, tags, taskListId) {
+      this.title = title;
+      this.body = body
       this.id = id;
-      this.settings = settings;
-      this.lists = [];  // All the Lists that are currently in the container as List objects.
-      this.identifier = identifier === null ? Date.now() : identifier;  // All elements within this board will carry an unqiue id.
+      this.tags = tags;
+      this.taskListId = taskListId;
   }
 
-  IDGenerator() {
-      this.identifier += 1;
-      return 'e' + this.identifier.toString();
+  getTaskList() {
+      return document.getElementById(this.taskListId);
   }
 
-  addList() {
-      let listTitle = `Untitled List ${this.lists.length + 1}`;
+  editTask() {
+    let taskElement = document.getElementById(this.id);
+    taskElement.querySelector('.taskTitle')
+
+    // Replace task title with input field
+    let titleInput = document.createElement('textarea');
+    titleInput.value = this.title;
+    titleInput.classList.add('taskTitle');
+    titleInput.maxLength = 256;
+    taskElement.querySelector('.taskTitle').replaceWith(titleInput);
+
+    // Replace task body with textarea
+    let bodyInput = document.createElement('textarea');
+    bodyInput.value = this.body;
+    bodyInput.classList.add('taskBody');
+    taskElement.querySelector('.taskBody').replaceWith(bodyInput);
+
+
+    let taskTags = taskElement.querySelector('.taskTags')
+    for (let tagElement of taskTags.childNodes) {
+      let tagName = tagElement.textContent
+      let tag = currentBoard().findTag(tagName);
+
+      /* // Bugs somewhere, probably unnecessary anyway since you can always just make a new tag I guess.
+      let tagInput = document.createElement('input');
+      tagInput.maxLength = 10;
+      tagInput.classList.add('dropdownTagInput');
+      tagInput.addEventListener('change', () => {
+        if (tagInput.value.length === 0) tagInput.value = 'New';
+        tag.name = tagInput.value;
+        renderAllLists();
+      });
+      */
+
+      let tagColourPicker = document.createElement('input');
+      tagColourPicker.type = 'color';
+      tagColourPicker.value = '#ffffff';
+      tagColourPicker.classList.add('tagColourPicker');
+      tagColourPicker.addEventListener('change', (e) => {
+        tag.colour = e.target.value;
+        renderAllLists();
+      });
   
-      let list = new List(listTitle, this.IDGenerator(), this.id);
-      this.lists.push(list);
+      let tagRemoveButton = document.createElement('i');
+      tagRemoveButton.classList.add('fa-solid', 'fa-times');
+      tagRemoveButton.addEventListener('click', () => {
+          this.removeTag(tagName);
+          renderList(this.taskListId);
+      });
+  
+      //tagElement.appendChild(tagInput);
+      tagElement.appendChild(tagColourPicker);
+      tagElement.appendChild(tagRemoveButton);
+    }
 
-      let listElement = list.generateElement();
-      listsContainer.insertBefore(listElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+
+    let tagDropdown = document.createElement('ul');
+    tagDropdown.classList.add('tagDropdown');
+    tagDropdown.style.display = 'none';
+
+    let boardTags = currentBoard().tags;
+    for (let tag of boardTags) {
+        let tagElement = document.createElement('li');
+        tagElement.classList.add('taskTag');
+        tagElement.innerText = tag.name;
+        tagElement.style.backgroundColor = tag.colour;
+        tagElement.addEventListener('click', () => {
+            this.addTag(tag.name);
+            renderList(this.taskListId);
+        });
+
+        tagDropdown.appendChild(tagElement);
+    }
+
+    let newTagOption = document.createElement('li');
+
+    let dropdownTagInput = document.createElement('input');
+    dropdownTagInput.maxLength = 10;
+    dropdownTagInput.classList.add('dropdownTagInput');
+    let dropdownTagColour = document.createElement('input');
+    dropdownTagColour.type = 'color';
+    dropdownTagColour.value = '#ffffff';
+    dropdownTagColour.classList.add('dropdownTagColour');
+    let newTagButton = document.createElement('i');
+    newTagButton.classList.add('newTagButton', 'fa-solid', 'fa-plus');
+    newTagButton.addEventListener('click', () => {
+      let tagName = dropdownTagInput.value;
+      if (tagName.length === 0) tagName = 'New';
+      let tagColour = dropdownTagColour.value;
+
+      let newTag = { name: tagName, colour: tagColour };
+      currentBoard().addTag(newTag);
+      this.addTag(tagName);
+
+      renderList(this.taskListId);
+    });
+    newTagOption.appendChild(dropdownTagInput);
+    newTagOption.appendChild(dropdownTagColour);
+    newTagOption.appendChild(newTagButton);
+
+    tagDropdown.appendChild(newTagOption);
+
+
+    let tagButton = document.createElement('i');
+    tagButton.classList.add('tagButton', 'fa-solid', 'fa-plus');
+    tagButton.addEventListener('click', () => {
+      tagDropdown.style.display = 'inline-block';
+    });
+
+    tagButton.appendChild(tagDropdown);
+    taskTags.appendChild(tagButton);
+
+
+
+
+    let cancelButton = document.createElement('i');
+    cancelButton.classList.add('taskDeleteButton', 'fa-solid', 'fa-times');
+    cancelButton.addEventListener('click', () => {
+      save();
+    });
+    taskElement.querySelector('.taskEditButton').replaceWith(cancelButton);
+
+    let save = () => {
+      this.title = titleInput.value;
+      if (this.title.length === 0) this.title = 'Untitled Task'
+      this.body = bodyInput.value;
+      renderList(this.taskListId);
+    };
+
+    function listenClickOutside(e) {
+      let withinBoundaries = e.composedPath().includes(taskElement);
+      if (!withinBoundaries) {
+          save();
+          document.removeEventListener('click', listenClickOutside);
+      }
+    }
+
+    document.addEventListener('click', listenClickOutside);
+  }
+
+  addTag(tagName) {
+    if (!this.tags.includes(tagName)) {
+        this.tags.push(tagName);
+    }
+  }
+
+  removeTag(tagName) {
+      this.tags = this.tags.filter(tag => tag !== tagName);
   }
 }
+
 
 /* < ========= Data Storage ============ > */
 function saveData() {
@@ -377,16 +544,15 @@ function loadData() {
 
       appData.settings = savedAppData.settings;
       appData.currentBoard = savedAppData.currentBoard >= 0 ? savedAppData.currentBoard : 0;
-      appData.identifier = savedAppData.identifier !== null ? savedAppData.identifier : 0;
       
       // Fill the data with boards.
       for (let board of savedAppData.boards) {
-          let boardElement = new Board(board.name, board.id, board.settings, board.identifier);
-
+          let boardElement = new Board(board.name, board.id, board.tags, board.identifier);
+          
           for (let list of board.lists) {
               let listElement = new List(list.name, list.id, boardElement.id);
               for (let task of list.tasks) {
-                  let taskElement = new Task(task.title, task.body, task.id, list.id);
+                  let taskElement = new Task(task.title, task.body, task.id, task.tags, list.id);
                   listElement.tasks.push(taskElement);
               }
               boardElement.lists.push(listElement);
@@ -434,7 +600,7 @@ deleteButton.addEventListener('click', () => {
     }
 
     if (appData.boards.length === 0) {
-        let newBoard = new Board("Untitled Board", 'b0', {'theme': null});
+        let newBoard = new Board("Untitled Board", 'b0');
         appData.boards.push(newBoard);
         appData.currentBoard = 0;
     }
@@ -451,7 +617,19 @@ window.onbeforeunload = function () {
   }
 }
 
-// rewrite and format all of this when it is working funcitonally
+/*  // probably dont need.
+newTagButton.addEventListener('click', () => {
+  let tagName = newTagInput.value;
+  if (tagName.length === 0) tagName = 'New';
+  let tagColour = newTagColour.value;
+
+  let newTag = { name: tagName, colour: tagColour };
+  currentBoard().addTag(newTag);
+
+  newTagInput.value = '';
+});
+*/
+
 
 document.getElementById("darkModeToggle").addEventListener("click", () => {
   document.documentElement.classList.toggle("dark-mode");
@@ -512,112 +690,3 @@ function createAlert(text) {
     div.parentNode.removeChild(div);
   }, 4500);
 }
-
-
-/*
-document.addEventListener("DOMContentLoaded", () => {  
-  // Task ID counter
-  let taskIdCounter = 0;
-
-  // Create a new task element
-  const createTaskElement = () => {
-    const task = document.createElement("div");
-    task.className = "boardTask";
-    task.draggable = true;
-    task.id = `task-${taskIdCounter++}`;
-    task.innerHTML = `
-        <div class="boardTaskHead">
-            <div class="boardTaskTitle">
-                <span contenteditable="true">Title</span>
-                <button class="deleteTaskButton">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
-            <div class="boardTaskTags">
-                <span class='boardTaskTag boardTaskTag--tag-1' contenteditable="true">Art</span>
-            </div>
-        </div>
-        <p contenteditable="true">Hello World</p>
-    `;
-
-    // Delete task
-    task.querySelector(".deleteTaskButton").addEventListener("click", () => {
-      task.remove();
-    });
-
-    return task;
-  };
-
-
-// Add tasks
-document.querySelectorAll(".addTaskButton").forEach((button) => {
-  button.addEventListener("click", () => {
-    const listBody = button.closest(".boardList").querySelector(".boardListBody");
-    listBody.appendChild(createTaskElement());
-  });
-});
-
-// Move tasks
-document.querySelectorAll(".boardListBody").forEach((listBody) => {
-  listBody.addEventListener("dragover", (e) => e.preventDefault());
-
-  listBody.addEventListener("drop", (e) => {
-    const taskId = e.dataTransfer.getData("text/plain");
-    const task = document.getElementById(taskId);
-    listBody.appendChild(task);
-  });
-});
-
-document.addEventListener("dragstart", (e) => {
-  if (e.target.classList.contains("boardTask")) {
-    e.dataTransfer.setData("text/plain", e.target.id);
-  }
-});
-
-
-
-// Add List
-document.getElementById("addListButton").addEventListener("click", () => {
-  const boardContainer = document.querySelector(".boardContainer");
-  const taskListElement = document.createElement("div");
-  taskListElement.className = "boardList";
-  //taskListElement.draggable = true;
-  taskListElement.innerHTML = `
-    <header>
-      <h2 contenteditable="true">New List</h2>
-      <button class="deleteListButton"><i class="fa-solid fa-trash"></i></button>
-    </header>
-
-    <div class="boardListBody"></div>
-    
-    <footer>
-      <button class="addTaskButton"><i class="fa-solid fa-plus"></i>Add Task</button>
-    </footer>
-  `;
-
-  boardContainer.appendChild(taskListElement);
-
-
-  const listBody = taskListElement.querySelector(".boardListBody");
-
-  // Task adding
-  taskListElement.querySelector(".addTaskButton").addEventListener("click", () => {
-    listBody.appendChild(createTaskElement());
-  });
-  // Moving tasks
-  listBody.addEventListener("dragover", (e) => e.preventDefault());
-  listBody.addEventListener("drop", (e) => {
-    const taskId = e.dataTransfer.getData("text/plain");
-    const task = document.getElementById(taskId);
-    listBody.appendChild(task);
-  });
-  
-
-  // List deletion
-  taskListElement.querySelector(".deleteListButton").addEventListener("click", () => {
-    taskListElement.remove();
-  });
-});
-});
-
-*/

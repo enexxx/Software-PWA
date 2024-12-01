@@ -206,25 +206,7 @@ p {
 .task p {
 	font-size: 15px;
 }
-/*
-.taskTag {
-	border-radius: 100px;
-	padding: 2px 13px;
-	font-size: 10px;
-}
-.taskTag--tag-1 {
-	color: var(--tag-1-text);
-	background-color: var(--tag-1);
-}
-.taskTag--tag-2 {
-	color: var(--tag-2-text);
-	background-color: var(--tag-2);
-}
-.taskTag--tag-3 {
-	color: var(--tag-3-text);
-	background-color: var(--tag-3);
-}
-*/
+
 .taskHead {
 	margin-bottom: 0.7rem;
 }
@@ -238,14 +220,42 @@ p {
 	font-weight: bolder;
 
 }
-.taskEditButton {
+.taskEditButton,
+.taskDeleteButton,
+.listDeleteButton {
 	opacity: 0%;
 	background-color: transparent;
 	border: 0;
 	color: var(--light-grey);
 	font-size: 15px;
 }
-.task:hover .taskEditButton {
+.task:hover .taskEditButton,
+.task:hover .taskDeleteButton,
+.taskList header:hover .listDeleteButton {
 	opacity: 50%;
 }
 
+.tagButton {
+    background: none;
+    border: 1px dashed #ccc;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.taskTags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.taskTag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #eee;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    gap: 5px;
+}
