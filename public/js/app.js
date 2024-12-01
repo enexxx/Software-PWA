@@ -64,8 +64,6 @@ function uniqueID() {
 }
 
 function getTaskFromElement(element) {
-  /* Get a task object from a list task element. */
-
   for (let list of currentLists()) {
       for (let task of list.tasks) {
           if (task.id === element.id) {
@@ -77,6 +75,10 @@ function getTaskFromElement(element) {
 
 function getListFromElement(element) {
   return currentLists().find(e => e.id === element.id);
+}
+
+function getListFromId(id) {
+  return currentBoard().lists.find(l => l.id === id);
 }
 
 function getBoardFromId(id) {
@@ -135,6 +137,22 @@ function renderAllLists() {
       // Insert before the add list button
       listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
   }
+
+  new Sortable(listsContainer, {
+    group: "lists",
+    animation: 150,
+
+    onEnd: function (evt) {
+      const { oldIndex, newIndex } = evt;
+
+      if (oldIndex !== newIndex) {
+        const movedList = currentLists().splice(oldIndex, 1)[0];
+        currentLists().splice(newIndex, 0, movedList);
+
+        saveData();
+      }
+    },
+  });
 }
 
 function renderList(listID) {
@@ -158,7 +176,6 @@ function renderList(listID) {
       // Insert before the add list button
       listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
   }
-
 }
 
 function addBoard() {
@@ -291,6 +308,23 @@ class List {
           taskListElement.appendChild(taskElement);
       }
 
+      new Sortable(taskListElement, {
+        group: "tasks",
+        animation: 150,
+    
+        onEnd: (evt) => {
+          let movedTask = this.tasks[evt.oldIndex];
+          movedTask.taskListId = evt.to.id;
+  
+          this.tasks.splice(evt.oldIndex, 1);
+  
+          getListFromId(evt.to.parentElement.id).tasks.splice(evt.newIndex, 0, movedTask);
+  
+          saveData();
+        }
+      });
+      
+
       return taskListElement;
   }
 
@@ -352,14 +386,14 @@ class List {
       listElement.appendChild(listHeader);
       if (this.tasks) {
           let taskListElement = this.renderTasks();
-          taskListElement.className = "taskListBody"
+          taskListElement.className = "taskListBody";
+
           listElement.appendChild(taskListElement);
       }
       listElement.appendChild(listFooter);
 
       return listElement;
   }
-
 }
 
 class Task {
@@ -578,7 +612,6 @@ loadData();
 
 
 // <=========== Other Events ============>
-  
 
 addListButton.addEventListener('click', () => currentBoard().addList());
 

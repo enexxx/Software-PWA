@@ -220,6 +220,7 @@ p {
 	font-weight: bolder;
 
 }
+
 .taskEditButton,
 .taskDeleteButton,
 .listDeleteButton {
@@ -243,6 +244,7 @@ p {
     font-size: 12px;
 }
 
+
 .taskTags {
     display: flex;
     gap: 5px;
@@ -258,4 +260,8 @@ p {
     border-radius: 5px;
     font-size: 12px;
     gap: 5px;
+}
+
+.taskTags:empty {
+    display: none;
 }
