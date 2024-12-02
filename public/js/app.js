@@ -35,9 +35,6 @@ const title = document.getElementById('boardTitle');
 var appData = {
   'boards': [],
   'currentBoard': 0,
-  'settings': {
-      'userName': "User"
-  }
 };
 
 let autoSaveInternalId = setInterval(function (){
@@ -663,6 +660,7 @@ function loadData() {
   let data = window.localStorage.getItem('kanbanAppData');
   if (data) {
       let savedAppData = JSON.parse(data);
+      console.log(data);
 
       appData.settings = savedAppData.settings;
       appData.currentBoard = savedAppData.currentBoard >= 0 ? savedAppData.currentBoard : 0;
