@@ -28,8 +28,6 @@ const listContextMenuClear = document.getElementById('listContextMenuClear');
 const listContextMenuDuplicate = document.getElementById('listContextMenuDuplicate');
 */
 
-const alerts = document.getElementById('alerts');
-
 const title = document.getElementById('boardTitle');
 
 
@@ -100,16 +98,15 @@ function renderBoard(board) {
 }
 
 function renderAllLists() {
-  // Refreshes the whole lists container
   for (let list of listsContainer.querySelectorAll('.taskList')) {
       list.remove();
   }
 
   for (let list of currentLists()) {
       let newListElement = list.generateElement();
-      // Insert before the add list button
-      listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+      listsContainer.appendChild(newListElement);
   }
+
 
   new Sortable(listsContainer, {
     group: "lists",
@@ -424,18 +421,9 @@ class Task {
       tagColourPicker.value = '#ffffff';
       tagColourPicker.classList.add('tagColourPicker');
       tagColourPicker.addEventListener('change', (e) => {
-        /*
-        let tags = document.querySelectorAll('taskTag');
-        for (let tag in tags) {
-          if (tag.textContent == tagName) {
-            tag.colour = e.target.value;
-          }
-        }
-        //renderAllLists();   // TODO change to finding all elements and chanign colour hacky. Doesnt work as intended either because the dropdown menu should be closed.
-        */
-        tag.colour = e.target.value;
-        renderAllLists(); 
-        //task.editTask();
+        tag.colour = e.target.value;  // changing all of their bg colours is too janky as it doesnt update the lists, and I have to get the current element too. Find a different way to stop it from closing the menu
+        renderAllLists();
+        task.editTask();   // I think maybe its becasue close hasnt been called yet even though the list is back up, and maybe clicking calls it accidentally?
       });
   
       let tagRemoveButton = document.createElement('i');
@@ -679,7 +667,6 @@ function loadData() {
       appData.settings = savedAppData.settings;
       appData.currentBoard = savedAppData.currentBoard >= 0 ? savedAppData.currentBoard : 0;
       
-      // Fill the data with boards.
       for (let board of savedAppData.boards) {
           let boardElement = new Board(board.name, board.id, board.tags, board.counter);
           
