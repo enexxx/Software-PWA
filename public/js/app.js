@@ -58,33 +58,6 @@ function currentBoard() {
 
 // ========= Functions ========= //
 
-function uniqueID() {
-  appData.identifier += 1;
-  return 'b' + appData.identifier;
-}
-
-function getTaskFromElement(element) {
-  for (let list of currentLists()) {
-      for (let task of list.tasks) {
-          if (task.id === element.id) {
-              return task;
-          }
-      }
-  }
-}
-
-function getListFromElement(element) {
-  return currentLists().find(e => e.id === element.id);
-}
-
-function getListFromId(id) {
-  return currentBoard().lists.find(l => l.id === id);
-}
-
-function getBoardFromId(id) {
-  return appData.boards.find(b => b.id === id);
-}
-
 function listBoards() {
   boardsList.innerHTML = '';
   for (let board of appData.boards) {
@@ -160,9 +133,9 @@ function renderList(listID) {
 
   // Handle deletions
   if (!list) {
-      let listElement = document.getElementById(listID);
-      listElement.parentNode.removeChild(listElement);
-      return;
+    let listElement = document.getElementById(listID);
+    listElement.parentNode.removeChild(listElement);
+    return;
   }
 
   // Get current list element if it exists.
@@ -183,7 +156,8 @@ function addBoard() {
   if (!boardTitle) boardTitle = "Unititled Board"
   addBoardText.value = '';
 
-  let newBoard = new Board(boardTitle, uniqueID());
+  appData.counter += 1;
+  let newBoard = new Board(boardTitle, 'b' + appData.counter);
   appData.boards.push(newBoard);
   listBoards();
 }
@@ -193,23 +167,23 @@ function addBoard() {
 // ========= Classes ========== //
 class Board {
 
-  constructor(name, id, tags, identifier=0) {
+  constructor(name, id, tags = [], counter=0) {
       this.name = name;
       this.id = id;
       this.lists = [];
       this.tags = tags;
-      this.identifier = identifier === null ? Date.now() : identifier;
+      this.counter = counter === null ? Date.now() : counter;
   }
 
-  IDGenerator() {
-      this.identifier += 1;
-      return 'e' + this.identifier.toString();
+  UniqueID() {
+      this.counter += 1;
+      return 'e' + this.counter.toString();
   }
 
   addList() {
       let listTitle = 'Untitled List';
   
-      let list = new List(listTitle, this.IDGenerator(), this.id);
+      let list = new List(listTitle, this.UniqueID(), this.id);
       this.lists.push(list);
 
       let listElement = list.generateElement();
@@ -314,11 +288,11 @@ class List {
     
         onEnd: (evt) => {
           let movedTask = this.tasks[evt.oldIndex];
-          movedTask.taskListId = evt.to.id;
+          movedTask.taskListId = evt.to.parentElement.id;
   
           this.tasks.splice(evt.oldIndex, 1);
   
-          getListFromId(evt.to.parentElement.id).tasks.splice(evt.newIndex, 0, movedTask);
+          currentBoard().lists.find(l => l.id === evt.to.parentElement.id).tasks.splice(evt.newIndex, 0, movedTask);
   
           saveData();
         }
@@ -371,7 +345,7 @@ class List {
       listButton.classList.add("addTaskButton");
       listButton.innerText = '+';
       listButton.addEventListener('click', () => {
-          let task = new Task('', '', getBoardFromId(this.parentBoardId).IDGenerator(), [], this.id);
+          let task = new Task('', '', currentBoard().UniqueID(), [], this.id);
           this.addTask(task);
           setTimeout(() => {  // messy fix but it works
             task.editTask();
@@ -429,7 +403,8 @@ class Task {
 
 
     let taskTags = taskElement.querySelector('.taskTags')
-    for (let tagElement of taskTags.childNodes) {
+
+    let createTagEditables = function(tagElement, task) { 
       let tagName = tagElement.textContent
       let tag = currentBoard().findTag(tagName);
 
@@ -449,20 +424,40 @@ class Task {
       tagColourPicker.value = '#ffffff';
       tagColourPicker.classList.add('tagColourPicker');
       tagColourPicker.addEventListener('change', (e) => {
+        /*
+        let tags = document.querySelectorAll('taskTag');
+        for (let tag in tags) {
+          if (tag.textContent == tagName) {
+            tag.colour = e.target.value;
+          }
+        }
+        //renderAllLists();   // TODO change to finding all elements and chanign colour hacky. Doesnt work as intended either because the dropdown menu should be closed.
+        */
         tag.colour = e.target.value;
-        renderAllLists();
+        renderAllLists(); 
+        //task.editTask();
       });
   
       let tagRemoveButton = document.createElement('i');
       tagRemoveButton.classList.add('fa-solid', 'fa-times');
       tagRemoveButton.addEventListener('click', () => {
-          this.removeTag(tagName);
-          renderList(this.taskListId);
+        task.removeTag(tagName);
+        for (let tag in taskElement.childNodes) {
+          if (tag.textContent == tagName) {
+            tagElement = tag;
+            break;
+          }
+        }
+        taskTags.removeChild(tagElement);
       });
   
       //tagElement.appendChild(tagInput);
       tagElement.appendChild(tagColourPicker);
       tagElement.appendChild(tagRemoveButton);
+    };
+
+    for (let tagElement of taskTags.childNodes) {
+      createTagEditables(tagElement, this)
     }
 
 
@@ -477,8 +472,13 @@ class Task {
         tagElement.innerText = tag.name;
         tagElement.style.backgroundColor = tag.colour;
         tagElement.addEventListener('click', () => {
+          if (this.tags.includes(tag.name) != true) {
             this.addTag(tag.name);
-            renderList(this.taskListId);
+
+            let newTagElement = tagElement.cloneNode(true)
+            createTagEditables(newTagElement, this);
+            taskTags.insertBefore(newTagElement, taskTags.childNodes[taskTags.childNodes.length - 1]);            
+          }
         });
 
         tagDropdown.appendChild(tagElement);
@@ -501,10 +501,18 @@ class Task {
       let tagColour = dropdownTagColour.value;
 
       let newTag = { name: tagName, colour: tagColour };
-      currentBoard().addTag(newTag);
-      this.addTag(tagName);
 
-      renderList(this.taskListId);
+      if (currentBoard().tags.map(a=>a.name).includes(tagName) != true) {
+        currentBoard().addTag(newTag);
+        this.addTag(tagName);
+
+        let tagElement = document.createElement('span');
+        tagElement.classList.add('taskTag');
+        tagElement.innerText = tagName;
+        tagElement.style.backgroundColor = tagColour;
+        createTagEditables(tagElement, this);
+        taskTags.insertBefore(tagElement, taskTags.childNodes[taskTags.childNodes.length - 1]);        
+      }
     });
     newTagOption.appendChild(dropdownTagInput);
     newTagOption.appendChild(dropdownTagColour);
@@ -521,8 +529,6 @@ class Task {
 
     tagButton.appendChild(tagDropdown);
     taskTags.appendChild(tagButton);
-
-
 
 
     let cancelButton = document.createElement('i');
@@ -562,6 +568,100 @@ class Task {
 }
 
 
+// <=========== Other Events ============>
+
+  addListButton.addEventListener('click', () => currentBoard().addList());
+
+  addBoardText.addEventListener('keyup', (e) => {
+    if (e.code === "Enter") addBoard();
+  });
+  
+  addBoardButton.addEventListener('click', addBoard);
+  
+  deleteButton.addEventListener('click', () => {
+      appData.boards.splice(appData.currentBoard, 1);
+      if (appData.currentBoard !== 0) {
+          appData.currentBoard--;
+      }
+  
+      if (appData.boards.length === 0) {
+          let newBoard = new Board("Untitled Board", 'b0');
+          appData.boards.push(newBoard);
+          appData.currentBoard = 0;
+      }
+  
+      listBoards();
+      renderBoard(currentBoard());
+  });
+  
+  window.onbeforeunload = function () {
+    if (JSON.stringify(appData) !== getDataFromLocalStorage()) {
+        return confirm();
+    }
+  }
+  
+  /*  // probably dont need.
+  newTagButton.addEventListener('click', () => {
+    let tagName = newTagInput.value;
+    if (tagName.length === 0) tagName = 'New';
+    let tagColour = newTagColour.value;
+  
+    let newTag = { name: tagName, colour: tagColour };
+    currentBoard().addTag(newTag);
+  
+    newTagInput.value = '';
+  });
+  */
+  
+  
+  document.getElementById("darkModeToggle").addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark-mode");
+    const isDarkMode = document.documentElement.classList.contains("dark-mode");
+    localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
+  });
+  
+  if (localStorage.getItem("darkMode") === "enabled") {
+    document.documentElement.classList.add("dark-mode");
+  }
+  
+
+
+  
+  
+  // <========== Sidebar ===========>
+  // TODO rewrite this
+  
+  function toggleSidebar() {
+    if (('toggled' in sidebar.dataset)) {
+        delete sidebar.dataset.toggled;
+        sidebar.style.width = "0";
+        sidebar.style.boxShadow = "unset";
+  
+        // Remove listen click outside of side
+        document.removeEventListener('click', listenClickOutside);
+    }
+    else {
+        sidebar.dataset.toggled = '';
+        sidebar.style.width = "250px";
+        sidebar.style.boxShadow = "100px 100px 0 100vw rgb(0 0 0 / 50%)";
+        // Listen click outside of sidebar
+        setTimeout(() => {
+            document.addEventListener('click', listenClickOutside);
+        }, 300);
+    }
+  }
+  
+  sidebarButton.addEventListener('click', toggleSidebar);
+  sidebarClose.addEventListener('click', toggleSidebar);
+  
+  function listenClickOutside(event) {
+    const withinBoundaries = event.composedPath().includes(sidebar);
+    if (!withinBoundaries && sidebar.style.width === "250px") {
+        toggleSidebar();
+    }
+  }
+
+
 /* < ========= Data Storage ============ > */
 function saveData() {
   window.localStorage.setItem('kanbanAppData', JSON.stringify(appData));
@@ -581,7 +681,7 @@ function loadData() {
       
       // Fill the data with boards.
       for (let board of savedAppData.boards) {
-          let boardElement = new Board(board.name, board.id, board.tags, board.identifier);
+          let boardElement = new Board(board.name, board.id, board.tags, board.counter);
           
           for (let list of board.lists) {
               let listElement = new List(list.name, list.id, boardElement.id);
@@ -609,117 +709,3 @@ function clearData() {
 }
 
 loadData();
-
-
-// <=========== Other Events ============>
-
-addListButton.addEventListener('click', () => currentBoard().addList());
-
-addBoardText.addEventListener('keyup', (e) => {
-  if (e.code === "Enter") addBoard();
-});
-
-addBoardButton.addEventListener('click', addBoard);
-
-saveButton.addEventListener('click', () => {saveData(); createAlert("Data successfully saved.")});
-
-deleteButton.addEventListener('click', () => {
-    let boardName = currentBoard().name;
-
-    // Delete the current board.
-    appData.boards.splice(appData.currentBoard, 1);
-    if (appData.currentBoard !== 0) {
-        appData.currentBoard--;
-    }
-
-    if (appData.boards.length === 0) {
-        let newBoard = new Board("Untitled Board", 'b0');
-        appData.boards.push(newBoard);
-        appData.currentBoard = 0;
-    }
-
-    listBoards();
-    renderBoard(appData.boards[appData.currentBoard]);
-
-    createAlert(`Deleted board "${boardName}"`)
-});
-
-window.onbeforeunload = function () {
-  if (JSON.stringify(appData) !== getDataFromLocalStorage()) {
-      return confirm();
-  }
-}
-
-/*  // probably dont need.
-newTagButton.addEventListener('click', () => {
-  let tagName = newTagInput.value;
-  if (tagName.length === 0) tagName = 'New';
-  let tagColour = newTagColour.value;
-
-  let newTag = { name: tagName, colour: tagColour };
-  currentBoard().addTag(newTag);
-
-  newTagInput.value = '';
-});
-*/
-
-
-document.getElementById("darkModeToggle").addEventListener("click", () => {
-  document.documentElement.classList.toggle("dark-mode");
-  const isDarkMode = document.documentElement.classList.contains("dark-mode");
-  localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
-});
-
-// On page load, apply saved mode
-if (localStorage.getItem("darkMode") === "enabled") {
-  document.documentElement.classList.add("dark-mode");
-}
-
-
-// <========== Sidebar ===========>
-
-function toggleSidebar() {
-  if (('toggled' in sidebar.dataset)) {
-      delete sidebar.dataset.toggled;
-      sidebar.style.width = "0";
-      sidebar.style.boxShadow = "unset";
-
-      // Remove listen click outside of side
-      document.removeEventListener('click', listenClickOutside);
-  }
-  else {
-      sidebar.dataset.toggled = '';
-      sidebar.style.width = "250px";
-      sidebar.style.boxShadow = "100px 100px 0 100vw rgb(0 0 0 / 50%)";
-      // Listen click outside of sidebar
-      setTimeout(() => {
-          document.addEventListener('click', listenClickOutside);
-      }, 300);
-  }
-}
-
-sidebarButton.addEventListener('click', toggleSidebar);
-sidebarClose.addEventListener('click', toggleSidebar);
-
-function listenClickOutside(event) {
-  const withinBoundaries = event.composedPath().includes(sidebar);
-  if (!withinBoundaries && sidebar.style.width === "250px") {
-      toggleSidebar();
-  }
-}
-
-function createAlert(text) {
-  let div = document.createElement('div');
-  let p = document.createElement('p');
-  p.innerText = text;
-  div.classList.add('alert');
-  div.appendChild(p);
-
-  alerts.appendChild(div);
-  setTimeout(function(){
-    div.classList.add('animateHidden');
-  }, 3500);
-  setTimeout(function(){
-    div.parentNode.removeChild(div);
-  }, 4500);
-}
