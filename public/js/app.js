@@ -420,7 +420,8 @@ class Task {
       tagColourPicker.addEventListener('change', (e) => {
         tag.colour = e.target.value;  // changing all of their bg colours is too janky as it doesnt update the lists, and I have to get the current element too. Find a different way to stop it from closing the menu
         renderAllLists();
-        task.editTask();   // I think maybe its becasue close hasnt been called yet even though the list is back up, and maybe clicking calls it accidentally?
+        document.removeEventListener('click', listenClickOutside);
+        task.editTask();   // I think maybe I need to remove the close eventlistner?
       });
   
       let tagRemoveButton = document.createElement('i');
