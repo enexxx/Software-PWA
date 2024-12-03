@@ -1,0 +1,42 @@
+CREATE TABLE Boards (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    counter INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Lists (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    parentBoardId TEXT NOT NULL,
+    FOREIGN KEY (parentBoardId) REFERENCES Boards(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Tasks (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    body TEXT,
+    taskListId TEXT NOT NULL,
+    FOREIGN KEY (taskListId) REFERENCES Lists(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    colour TEXT NOT NULL, 
+    boardId TEXT NOT NULL,
+    UNIQUE(name, boardId),
+    FOREIGN KEY (boardId) REFERENCES Boards(id) ON DELETE CASCADE
+);
+
+CREATE TABLE TaskTags (
+    taskId TEXT NOT NULL,
+    tagId INTEGER NOT NULL,
+    PRIMARY KEY (taskId, tagId),
+    FOREIGN KEY (taskId) REFERENCES Tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY (tagId) REFERENCES Tags(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Metadata (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    currentBoard TEXT NOT NULL
+);

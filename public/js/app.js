@@ -1,4 +1,3 @@
-const boardContainer = document.getElementById('boardContainer');
 const listsContainer = document.getElementById('listsContainer');
 
 const sidebar = document.getElementById('sidebar');
@@ -53,7 +52,7 @@ function currentBoard() {
 
 // ========= Functions ========= //
 
-function listBoards() {
+function createBoards() {
   boardsList.innerHTML = '';
   for (let board of appData.boards) {
       let boardTitle = document.createElement('li');
@@ -62,7 +61,7 @@ function listBoards() {
       if (board.id === currentBoard().id) boardTitle.classList.add('active');
       boardTitle.addEventListener('click', () => {
           renderBoard(board);
-          listBoards();
+          createBoards();
       });
       boardsList.appendChild(boardTitle);
   }
@@ -84,7 +83,7 @@ function renderBoard(board) {
         document.title = input.value;
         title.innerText = input.value;
         input.replaceWith(title);
-        listBoards()
+        createBoards()
     };
 
     input.addEventListener('blur', save, {once: true});
@@ -153,7 +152,7 @@ function addBoard() {
   appData.counter += 1;
   let newBoard = new Board(boardTitle, 'b' + appData.counter);
   appData.boards.push(newBoard);
-  listBoards();
+  createBoards();
 }
 
 
@@ -418,10 +417,11 @@ class Task {
       tagColourPicker.value = '#ffffff';
       tagColourPicker.classList.add('tagColourPicker');
       tagColourPicker.addEventListener('change', (e) => {
-        tag.colour = e.target.value;  // changing all of their bg colours is too janky as it doesnt update the lists, and I have to get the current element too. Find a different way to stop it from closing the menu
+        tag.colour = e.target.value;
+        
         renderAllLists();
         document.removeEventListener('click', listenClickOutside);
-        task.editTask();   // I think maybe I need to remove the close eventlistner?
+        task.editTask();    //janky but it works
       });
   
       let tagRemoveButton = document.createElement('i');
@@ -576,15 +576,10 @@ class Task {
           appData.currentBoard = 0;
       }
   
-      listBoards();
+      createBoards();
       renderBoard(currentBoard());
   });
   
-  window.onbeforeunload = function () {
-    if (JSON.stringify(appData) !== getDataFromLocalStorage()) {
-        return confirm();
-    }
-  }
   
   /*  // probably dont need.
   newTagButton.addEventListener('click', () => {
@@ -649,12 +644,9 @@ class Task {
 
 
 /* < ========= Data Storage ============ > */
+/*
 function saveData() {
   window.localStorage.setItem('kanbanAppData', JSON.stringify(appData));
-}
-
-function getDataFromLocalStorage() {
-  return window.localStorage.getItem('kanbanAppData');
 }
 
 function loadData() {
@@ -687,11 +679,119 @@ function loadData() {
       let newBoard = new Board("Untitled Board", 'b0');
       appData.boards.push(newBoard);
   }
-  listBoards();
+
+  createBoards();
 }
 
 function clearData() {
   window.localStorage.clear();
+}
+*/
+
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('../../database/kanban.db');
+
+
+function saveData() {
+  db.run(`UPDATE AppMetadata SET currentBoard = ?`, [appData.currentBoard]);
+
+  db.run(`DELETE FROM Boards`); 
+  for (let board of appData.boards) {
+      db.run(
+        `INSERT INTO Boards (id, name, counter) 
+        VALUES (?, ?, ?)`,
+        [board.id, board.name, board.counter]
+    );
+
+    db.run(`DELETE FROM Lists WHERE parentBoardId = ?`, [board.id]); 
+    for (let list of board.lists) {
+        db.run(
+            `INSERT INTO Lists (id, name, parentBoardId) 
+             VALUES (?, ?, ?)`,
+            [list.id, list.name, board.id]
+        );
+  
+        db.run(`DELETE FROM Tasks WHERE taskListId = ?`, [list.id]);
+        for (let task of list.tasks) {
+            db.run(
+                `INSERT INTO Tasks (id, title, body, taskListId) 
+                 VALUES (?, ?, ?, ?)`,
+                [task.id, task.title, task.body, list.id]
+            );
+  
+            db.run(`DELETE FROM TaskTags WHERE taskId = ?`, [task.id]);
+            for (let tagName of task.tags) {
+                let tag = board.tags.find((t) => t.name === tagName);
+                if (tag) {
+                    db.run(
+                        `INSERT INTO TaskTags (taskId, tagId) 
+                         VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
+                        [task.id, tag.name, board.id]
+                    );
+                }
+            }
+        }
+    }
+  
+    db.run(`DELETE FROM Tags WHERE boardId = ?`, [board.id]);
+    for (let tag of board.tags) {
+        db.run(
+            `INSERT INTO Tags (name, colour, boardId) 
+             VALUES (?, ?, ?)`,
+            [tag.name, tag.colour, board.id]
+        );
+    }
+
+  }
+}
+
+
+function loadData() {
+  let metadata = db.get(`SELECT * FROM Metadata LIMIT 1`);
+  if (metadata) {
+    appData.currentBoard = metadata.currentBoard >= 0 ? metadata.currentBoard : 0;
+
+
+    let board = db.get(`SELECT * FROM Boards WHERE id = ?`, [appData.currentBoard]);
+    let boardElement = new Board(board.name, board.id, [], board.counter);
+
+    let lists = db.all(`SELECT * FROM Lists WHERE parentBoardId = ?`, [boardElement.id]);
+    if (!lists || lists.length == 0) board.lists = [];
+    for (let list of lists) {
+        let listElement = new List(list.name, list.id, boardElement.id);
+
+        let tasks = db.all(`SELECT * FROM Tasks WHERE taskListId = ?`, [listElement.id]);
+        if (!tasks || tasks.length == 0) list.tasks = [];
+        for (let task of tasks) {
+            let taskElement = new Task(task.title, task.body, task.id, [], listElement.id);
+
+            let tags = db.all(
+                `SELECT Tags.name FROM TaskTags 
+                INNER JOIN Tags ON TaskTags.tagId = Tags.id 
+                WHERE TaskTags.taskId = ?`,
+                [taskElement.id]
+            );
+            taskElement.tags = tags && tags.length > 0 ? tags.map((tag) => tag.name) : [];
+
+            listElement.tasks.push(taskElement);
+        }
+
+        boardElement.lists.push(listElement);
+    }
+
+    let tags = db.all(`SELECT * FROM Tags WHERE boardId = ?`, [board.id]);
+    board.tags = tags && tags.length > 0 ? tags.map((tag) => ({ name: tag.name, colour: tag.colour })) : [];
+
+
+    renderBoard(appData.boards[appData.currentBoard]);      //when load is part of a backend server.js file, it should return a code to say if the data was saved or not, and if it was, then call this, else do below.
+  } 
+  else {
+      appData.currentBoard = 0;
+      let newBoard = new Board("Untitled Board", 'b0');
+      appData.boards.push(newBoard);
+  }
+
+  createBoards();
 }
 
 loadData();
