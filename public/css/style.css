@@ -115,26 +115,56 @@ p {
 }
 
 
-
-
 #boardTitle {
 	padding: 1rem 0 0 1rem;
 }
+
 #boardContainer {
-	padding: 2rem;
-	width: 100%;
-	display: inline-block;
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem;
+	margin-top: 2rem;
+    gap: 1rem;
+    align-items: flex-start;
+	height: 100%;
+    white-space: nowrap;
+	scroll-behavior: smooth;
 }
 
 #listsContainer {
-	display: flex;
-	gap: 1.5rem;
-	margin: 2rem;
-	justify-content: start;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: nowrap;
+}
+
+#addListButton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #d3d3d3;
+    border: 2px dashed #888;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#boardContainer::-webkit-scrollbar {
+	height: 13px;
+}
+
+#boardContainer::-webkit-scrollbar-thumb {
+	background-color: rgba(108, 108, 108, 0.5);
+	border-radius: 4px;
+}
+
+#boardContainer::-webkit-scrollbar-track {
+	background-color: rgba(108, 108, 108, 0.1);
 }
 
 .taskList {
-	width: 19%
+	flex: 0 0 300px;
+	min-width: 300px;
 }
 .taskList header {
 	background-color: var(--list);
@@ -177,6 +207,7 @@ p {
 .taskList footer:hover {
     opacity: 80%;
 }
+
 .addTaskButton {
 	background: none;
 	border: none;
@@ -185,10 +216,17 @@ p {
 	opacity: 50%;
 	padding: 1rem;
 }
-.taskList footer i {
+.addTaskButton i {
     display: inline-block;
     font-size: 10px;
     margin-right: 0.2rem;
+}
+
+.addListButton {
+	background: none;
+	border: none;
+	font-size: 13px;
+	padding: 1rem;
 }
 
 .task {

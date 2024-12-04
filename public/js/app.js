@@ -1,3 +1,4 @@
+const boardContainer = document.getElementById('boardContainer');
 const listsContainer = document.getElementById('listsContainer');
 
 const sidebar = document.getElementById('sidebar');
@@ -10,7 +11,6 @@ const boardsList = document.getElementById('boardsList');
 const addBoardText = document.getElementById('addBoardText');
 const addBoardButton = document.getElementById('addBoardButton');
 
-const saveButton = document.getElementById('saveButton');
 const deleteButton = document.getElementById('deleteButton');
 
 /*
@@ -36,9 +36,12 @@ var appData = {
   'currentBoard': 0,
 };
 
-let autoSaveInternalId = setInterval(function (){
+setInterval(function (){
   saveData();
 }, 5000);
+window.addEventListener("beforeunload", (event) => {
+  saveData();
+});
 
 
 function currentLists() {
@@ -52,7 +55,7 @@ function currentBoard() {
 
 // ========= Functions ========= //
 
-function createBoards() {
+function createBoardsList() {
   boardsList.innerHTML = '';
   for (let board of appData.boards) {
       let boardTitle = document.createElement('li');
@@ -61,7 +64,7 @@ function createBoards() {
       if (board.id === currentBoard().id) boardTitle.classList.add('active');
       boardTitle.addEventListener('click', () => {
           renderBoard(board);
-          createBoards();
+          createBoardsList();
       });
       boardsList.appendChild(boardTitle);
   }
@@ -83,7 +86,7 @@ function renderBoard(board) {
         document.title = input.value;
         title.innerText = input.value;
         input.replaceWith(title);
-        createBoards()
+        createBoardsList()
     };
 
     input.addEventListener('blur', save, {once: true});
@@ -124,14 +127,12 @@ function renderAllLists() {
 function renderList(listID) {
   let list = currentLists().find(e => e.id === listID);
 
-  // Handle deletions
   if (!list) {
     let listElement = document.getElementById(listID);
     listElement.parentNode.removeChild(listElement);
     return;
   }
 
-  // Get current list element if it exists.
   let listElement = document.getElementById(list.id);
   if (listElement != null) {
       let newListElement = list.generateElement();
@@ -139,8 +140,7 @@ function renderList(listID) {
   }
   else {
       let newListElement = list.generateElement();
-      // Insert before the add list button
-      listsContainer.insertBefore(newListElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+      listsContainer.appendChild(newListElement);
   }
 }
 
@@ -152,7 +152,7 @@ function addBoard() {
   appData.counter += 1;
   let newBoard = new Board(boardTitle, 'b' + appData.counter);
   appData.boards.push(newBoard);
-  createBoards();
+  createBoardsList();
 }
 
 
@@ -180,7 +180,7 @@ class Board {
       this.lists.push(list);
 
       let listElement = list.generateElement();
-      listsContainer.insertBefore(listElement, listsContainer.childNodes[listsContainer.childNodes.length - 2]);
+      listsContainer.appendChild(listElement);
   }
 
   addTag(tag) {
@@ -401,14 +401,24 @@ class Task {
       let tagName = tagElement.textContent
       let tag = currentBoard().findTag(tagName);
 
-      /* // Bugs somewhere, probably unnecessary anyway since you can always just make a new tag I guess.
-      let tagInput = document.createElement('input');
-      tagInput.maxLength = 10;
-      tagInput.classList.add('dropdownTagInput');
-      tagInput.addEventListener('change', () => {
-        if (tagInput.value.length === 0) tagInput.value = 'New';
-        tag.name = tagInput.value;
-        renderAllLists();
+      /*
+      let tagTitle = document.something or other
+      tagTitle.addEventListener('click', (e) => {
+          let input = document.createElement('input');
+          input.value = tagTitle.textContent;
+          input.maxLength = 128;
+          tagTitle.replaceWith(input);
+
+          let save = () => {
+              this.name = input.value;
+              if (this.name.length === 0) this.name = 'New'
+              renderAllLists();
+              document.removeEventListener('click', listenClickOutside);
+              task.editTask();    //janky but it works
+          };
+
+          input.addEventListener('blur', save, {once: true});
+          input.focus();
       });
       */
 
@@ -529,17 +539,23 @@ class Task {
       if (this.title.length === 0) this.title = 'Untitled Task'
       this.body = bodyInput.value;
       renderList(this.taskListId);
+      document.removeEventListener('click', listenClickOutside);
     };
 
     function listenClickOutside(e) {
       let withinBoundaries = e.composedPath().includes(taskElement);
       if (!withinBoundaries) {
           save();
-          document.removeEventListener('click', listenClickOutside);
       }
     }
 
     document.addEventListener('click', listenClickOutside);
+
+
+    window.addEventListener("beforeunload", () => {
+      save()
+      saveData();
+    });
   }
 
   addTag(tagName) {
@@ -556,7 +572,10 @@ class Task {
 
 // <=========== Other Events ============>
 
-  addListButton.addEventListener('click', () => currentBoard().addList());
+  addListButton.addEventListener('click', () => {
+    currentBoard().addList();
+    boardContainer.scrollTo({ left: boardContainer.scrollWidth });
+  });
 
   addBoardText.addEventListener('keyup', (e) => {
     if (e.code === "Enter") addBoard();
@@ -576,7 +595,7 @@ class Task {
           appData.currentBoard = 0;
       }
   
-      createBoards();
+      createBoardsList();
       renderBoard(currentBoard());
   });
   
@@ -644,6 +663,7 @@ class Task {
 
 
 /* < ========= Data Storage ============ > */
+
 /*
 function saveData() {
   window.localStorage.setItem('kanbanAppData', JSON.stringify(appData));
@@ -653,7 +673,6 @@ function loadData() {
   let data = window.localStorage.getItem('kanbanAppData');
   if (data) {
       let savedAppData = JSON.parse(data);
-      console.log(data);
 
       appData.settings = savedAppData.settings;
       appData.currentBoard = savedAppData.currentBoard >= 0 ? savedAppData.currentBoard : 0;
@@ -671,16 +690,15 @@ function loadData() {
           }
           appData.boards.push(boardElement);
       }
-
-      renderBoard(appData.boards[appData.currentBoard]);
   } 
   else {
-      appData.currentBoard = 0;
+      appData.currentBoard = 0;     //dont think I need this as it is handled? or handle it in renderBoards instead
       let newBoard = new Board("Untitled Board", 'b0');
       appData.boards.push(newBoard);
   }
 
-  createBoards();
+  createBoardsList();
+  renderBoard(appData.boards[appData.currentBoard]);
 }
 
 function clearData() {
@@ -688,110 +706,61 @@ function clearData() {
 }
 */
 
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('../../database/kanban.db');
 
+async function saveData() {
+  let response = await fetch('http://localhost:3000/saveData', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(appData),
+  });
 
-function saveData() {
-  db.run(`UPDATE AppMetadata SET currentBoard = ?`, [appData.currentBoard]);
-
-  db.run(`DELETE FROM Boards`); 
-  for (let board of appData.boards) {
-      db.run(
-        `INSERT INTO Boards (id, name, counter) 
-        VALUES (?, ?, ?)`,
-        [board.id, board.name, board.counter]
-    );
-
-    db.run(`DELETE FROM Lists WHERE parentBoardId = ?`, [board.id]); 
-    for (let list of board.lists) {
-        db.run(
-            `INSERT INTO Lists (id, name, parentBoardId) 
-             VALUES (?, ?, ?)`,
-            [list.id, list.name, board.id]
-        );
-  
-        db.run(`DELETE FROM Tasks WHERE taskListId = ?`, [list.id]);
-        for (let task of list.tasks) {
-            db.run(
-                `INSERT INTO Tasks (id, title, body, taskListId) 
-                 VALUES (?, ?, ?, ?)`,
-                [task.id, task.title, task.body, list.id]
-            );
-  
-            db.run(`DELETE FROM TaskTags WHERE taskId = ?`, [task.id]);
-            for (let tagName of task.tags) {
-                let tag = board.tags.find((t) => t.name === tagName);
-                if (tag) {
-                    db.run(
-                        `INSERT INTO TaskTags (taskId, tagId) 
-                         VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
-                        [task.id, tag.name, board.id]
-                    );
-                }
-            }
-        }
-    }
-  
-    db.run(`DELETE FROM Tags WHERE boardId = ?`, [board.id]);
-    for (let tag of board.tags) {
-        db.run(
-            `INSERT INTO Tags (name, colour, boardId) 
-             VALUES (?, ?, ?)`,
-            [tag.name, tag.colour, board.id]
-        );
-    }
-
+  if (!response.ok) {
+    console.error('Failed to save data');
   }
 }
 
+async function loadData() {
+  let response = await fetch('http://localhost:3000/loadData');
+  if (response.ok) {
+    let data = await response.json();
+    console.log('Loaded data:', data);
 
-function loadData() {
-  let metadata = db.get(`SELECT * FROM Metadata LIMIT 1`);
-  if (metadata) {
-    appData.currentBoard = metadata.currentBoard >= 0 ? metadata.currentBoard : 0;
 
+    let savedAppData = JSON.parse(data);
 
-    let board = db.get(`SELECT * FROM Boards WHERE id = ?`, [appData.currentBoard]);
-    let boardElement = new Board(board.name, board.id, [], board.counter);
-
-    let lists = db.all(`SELECT * FROM Lists WHERE parentBoardId = ?`, [boardElement.id]);
-    if (!lists || lists.length == 0) board.lists = [];
-    for (let list of lists) {
-        let listElement = new List(list.name, list.id, boardElement.id);
-
-        let tasks = db.all(`SELECT * FROM Tasks WHERE taskListId = ?`, [listElement.id]);
-        if (!tasks || tasks.length == 0) list.tasks = [];
-        for (let task of tasks) {
-            let taskElement = new Task(task.title, task.body, task.id, [], listElement.id);
-
-            let tags = db.all(
-                `SELECT Tags.name FROM TaskTags 
-                INNER JOIN Tags ON TaskTags.tagId = Tags.id 
-                WHERE TaskTags.taskId = ?`,
-                [taskElement.id]
-            );
-            taskElement.tags = tags && tags.length > 0 ? tags.map((tag) => tag.name) : [];
-
+    appData.currentBoard = savedAppData.currentBoard;
+    
+    if (savedAppData.boards.length > 0) {
+      for (let board of savedAppData.boards) {
+        let boardElement = new Board(board.name, board.id, board.tags, board.counter);
+        
+        for (let list of board.lists) {
+          let listElement = new List(list.name, list.id, boardElement.id);
+          for (let task of list.tasks) {
+            let taskElement = new Task(task.title, task.body, task.id, task.tags, list.id);
             listElement.tasks.push(taskElement);
+          }
+          boardElement.lists.push(listElement);
         }
-
-        boardElement.lists.push(listElement);
+        appData.boards.push(boardElement);
+      }
+      
     }
-
-    let tags = db.all(`SELECT * FROM Tags WHERE boardId = ?`, [board.id]);
-    board.tags = tags && tags.length > 0 ? tags.map((tag) => ({ name: tag.name, colour: tag.colour })) : [];
-
-
-    renderBoard(appData.boards[appData.currentBoard]);      //when load is part of a backend server.js file, it should return a code to say if the data was saved or not, and if it was, then call this, else do below.
-  } 
-  else {
-      appData.currentBoard = 0;
+    else {
       let newBoard = new Board("Untitled Board", 'b0');
       appData.boards.push(newBoard);
-  }
+    }
 
-  createBoards();
+    createBoardsList();
+    renderBoard(appData.boards[appData.currentBoard]);
+
+  } 
+  else {
+      console.error('Failed to load data');
+  }
 }
+
 
 loadData();
