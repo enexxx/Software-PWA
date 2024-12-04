@@ -708,6 +708,7 @@ function clearData() {
 
 
 async function saveData() {
+  console.log(appData, JSON.stringify(appData));
   let response = await fetch('http://localhost:3000/saveData', {
     method: 'POST',
     headers: {
@@ -724,11 +725,9 @@ async function saveData() {
 async function loadData() {
   let response = await fetch('http://localhost:3000/loadData');
   if (response.ok) {
-    let data = await response.json();
-    console.log('Loaded data:', data);
+    let savedAppData = await response.json();
+    console.log('Loaded data:', savedAppData);
 
-
-    let savedAppData = JSON.parse(data);
 
     appData.currentBoard = savedAppData.currentBoard;
     

@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const db = new sqlite3.Database('./database/kanban.db');
+const db = new sqlite3.Database('./database/appData.db');
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
@@ -43,61 +43,59 @@ app.get("/", function (req, res) {
   
 
 app.post('/saveData', (req, res) => {
-    const appData = req.body;
+    let appData = req.body;
 
-    db.serialize(() => {
-        db.run(`UPDATE AppMetadata SET currentBoard = ?`, [appData.currentBoard]);
+    db.run(`UPDATE Metadata SET currentBoard = ?`, [appData.currentBoard]);
 
-        db.run(`DELETE FROM Boards`);
-        appData.boards.forEach((board) => {
+    db.run(`DELETE FROM Boards`);
+    appData.boards.forEach((board) => {
+        db.run(
+            `INSERT INTO Boards (id, name, counter) 
+            VALUES (?, ?, ?)`,
+            [board.id, board.name, board.counter]
+        );
+
+        db.run(`DELETE FROM Lists WHERE parentBoardId = ?`, [board.id]);
+        board.lists.forEach((list) => {
             db.run(
-                `INSERT INTO Boards (id, name, counter) 
-                VALUES (?, ?, ?)`,
-                [board.id, board.name, board.counter]
+                `INSERT INTO Lists (id, name, parentBoardId) 
+                    VALUES (?, ?, ?)`,
+                [list.id, list.name, board.id]
             );
 
-            db.run(`DELETE FROM Lists WHERE parentBoardId = ?`, [board.id]);
-            board.lists.forEach((list) => {
+            db.run(`DELETE FROM Tasks WHERE taskListId = ?`, [list.id]);
+            list.tasks.forEach((task) => {
                 db.run(
-                    `INSERT INTO Lists (id, name, parentBoardId) 
-                     VALUES (?, ?, ?)`,
-                    [list.id, list.name, board.id]
+                    `INSERT INTO Tasks (id, title, body, taskListId) 
+                        VALUES (?, ?, ?, ?)`,
+                    [task.id, task.title, task.body, list.id]
                 );
 
-                db.run(`DELETE FROM Tasks WHERE taskListId = ?`, [list.id]);
-                list.tasks.forEach((task) => {
-                    db.run(
-                        `INSERT INTO Tasks (id, title, body, taskListId) 
-                         VALUES (?, ?, ?, ?)`,
-                        [task.id, task.title, task.body, list.id]
-                    );
-
-                    db.run(`DELETE FROM TaskTags WHERE taskId = ?`, [task.id]);
-                    task.tags.forEach((tagName) => {
-                        const tag = board.tags.find((t) => t.name === tagName);
-                        if (tag) {
-                            db.run(
-                                `INSERT INTO TaskTags (taskId, tagId) 
-                                 VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
-                                [task.id, tag.name, board.id]
-                            );
-                        }
-                    });
+                db.run(`DELETE FROM TaskTags WHERE taskId = ?`, [task.id]);
+                task.tags.forEach((tagName) => {
+                    const tag = board.tags.find((t) => t.name === tagName);
+                    if (tag) {
+                        db.run(
+                            `INSERT INTO TaskTags (taskId, tagId) 
+                                VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
+                            [task.id, tag.name, board.id]
+                        );
+                    }
                 });
-            });
-
-            db.run(`DELETE FROM Tags WHERE boardId = ?`, [board.id]);
-            board.tags.forEach((tag) => {
-                db.run(
-                    `INSERT INTO Tags (name, colour, boardId) 
-                     VALUES (?, ?, ?)`,
-                    [tag.name, tag.colour, board.id]
-                );
             });
         });
 
-        res.send('Data saved successfully.');
+        db.run(`DELETE FROM Tags WHERE boardId = ?`, [board.id]);
+        board.tags.forEach((tag) => {
+            db.run(
+                `INSERT INTO Tags (name, colour, boardId) 
+                    VALUES (?, ?, ?)`,
+                [tag.name, tag.colour, board.id]
+            );
+        });
     });
+
+    res.send('Data saved successfully.');
 });
 
 
