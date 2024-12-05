@@ -37,6 +37,6 @@ CREATE TABLE TaskTags (
 );
 
 CREATE TABLE Metadata (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    currentBoard TEXT NOT NULL
+    id INTEGER PRIMARY KEY,
+    currentBoard INTEGER NOT NULL
 );

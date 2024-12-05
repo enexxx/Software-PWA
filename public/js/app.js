@@ -35,6 +35,7 @@ var appData = {
   'boards': [],
   'currentBoard': 0,
 };
+counter = 0;
 
 setInterval(function (){
   saveData();
@@ -149,8 +150,8 @@ function addBoard() {
   if (!boardTitle) boardTitle = "Unititled Board"
   addBoardText.value = '';
 
-  appData.counter += 1;
-  let newBoard = new Board(boardTitle, 'b' + appData.counter);
+  counter += 1;
+  let newBoard = new Board(boardTitle, 'Board' + counter.toString());
   appData.boards.push(newBoard);
   createBoardsList();
 }
@@ -165,12 +166,12 @@ class Board {
       this.id = id;
       this.lists = [];
       this.tags = tags;
-      this.counter = counter === null ? Date.now() : counter;
+      this.counter = counter;
   }
 
   UniqueID() {
       this.counter += 1;
-      return 'e' + this.counter.toString();
+      return `${this.id}-` + this.counter.toString();
   }
 
   addList() {
@@ -223,7 +224,7 @@ class List {
 
       for (let task of this.tasks) {
           let taskElement = document.createElement('li');
-          taskElement.id = task.id;
+          taskElement.id = 'task-' + task.id;
           taskElement.className = "task"
 
 
@@ -237,13 +238,11 @@ class List {
 
           let taskDeleteButton = document.createElement('i');
           taskDeleteButton.classList.add('taskDeleteButton', 'fa-solid', 'fa-trash');
-          taskDeleteButton.addEventListener('click', () => {this.removeTask(task);});
+          taskDeleteButton.addEventListener('click', () => {currentLists().find(l => l.id === task.taskListId).removeTask(task);});
 
           let taskEditButton = document.createElement('i');
           taskEditButton.classList.add('taskEditButton', 'fa-solid', 'fa-pen');
-          taskEditButton.addEventListener('click', () => {
-            task.editTask();
-          });
+          taskEditButton.addEventListener('click', () => { task.editTask(); });
 
           taskButtons.appendChild(taskDeleteButton);
           taskButtons.appendChild(taskEditButton);
@@ -254,6 +253,7 @@ class List {
           for (let tagName of task.tags) {
               let tag = currentBoard().findTag(tagName);
               let tagElement = document.createElement('span');
+              tagElement.id = 'tag-' + task.id;
               tagElement.classList.add('taskTag');
               tagElement.innerText = tag.name;
               tagElement.style.backgroundColor = tag.colour;
@@ -285,7 +285,7 @@ class List {
   
           this.tasks.splice(evt.oldIndex, 1);
   
-          currentBoard().lists.find(l => l.id === evt.to.parentElement.id).tasks.splice(evt.newIndex, 0, movedTask);
+          currentLists().find(l => l.id === evt.to.parentElement.id).tasks.splice(evt.newIndex, 0, movedTask);
   
           saveData();
         }
@@ -378,7 +378,7 @@ class Task {
   }
 
   editTask() {
-    let taskElement = document.getElementById(this.id);
+    let taskElement = document.getElementById('task-'+this.id);
     taskElement.querySelector('.taskTitle')
 
     // Replace task title with input field
@@ -664,82 +664,40 @@ class Task {
 
 /* < ========= Data Storage ============ > */
 
-/*
-function saveData() {
-  window.localStorage.setItem('kanbanAppData', JSON.stringify(appData));
-}
-
-function loadData() {
-  let data = window.localStorage.getItem('kanbanAppData');
-  if (data) {
-      let savedAppData = JSON.parse(data);
-
-      appData.settings = savedAppData.settings;
-      appData.currentBoard = savedAppData.currentBoard >= 0 ? savedAppData.currentBoard : 0;
-      
-      for (let board of savedAppData.boards) {
-          let boardElement = new Board(board.name, board.id, board.tags, board.counter);
-          
-          for (let list of board.lists) {
-              let listElement = new List(list.name, list.id, boardElement.id);
-              for (let task of list.tasks) {
-                  let taskElement = new Task(task.title, task.body, task.id, task.tags, list.id);
-                  listElement.tasks.push(taskElement);
-              }
-              boardElement.lists.push(listElement);
-          }
-          appData.boards.push(boardElement);
-      }
-  } 
-  else {
-      appData.currentBoard = 0;     //dont think I need this as it is handled? or handle it in renderBoards instead
-      let newBoard = new Board("Untitled Board", 'b0');
-      appData.boards.push(newBoard);
-  }
-
-  createBoardsList();
-  renderBoard(appData.boards[appData.currentBoard]);
-}
-
-function clearData() {
-  window.localStorage.clear();
-}
-*/
-
 
 async function saveData() {
-  window.localStorage.setItem('appData', JSON.stringify(appData));  //for offline parity
-  
-  let response = await fetch('http://localhost:3000/saveData', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(appData),
-  });
+  if (navigator.online) {
+    let response = await fetch('http://localhost:3000/saveData', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(appData),
+    });
 
-  if (!response.ok) {
-    console.error('Failed to save data');
+    if (!response.ok) {
+      console.error('Failed to save data');
+    }    
+  }
+  else {
+    window.localStorage.setItem('appData', JSON.stringify(appData));  //for offline parity
   }
 }
 
 async function loadData() {
-  let response = await fetch('http://localhost:3000/loadData');
-  let savedAppData;
-
-  if (!response.ok) {
-    console.error('Failed to load data');
-    return;
-    //savedAppData = JSON.parse(window.localStorage.getItem('appData')); // Fallback to local storage   TODO uncomment when sql is working
-  } 
+  let data;
+  if (navigator.online) {
+    let response = await fetch('http://localhost:3000/loadData');
+    data = await response.json();
+  }
   else {
-    savedAppData = await response.json();
+    data = JSON.parse(window.localStorage.getItem('appData'));
   }
 
-  appData.currentBoard = savedAppData.currentBoard;
-  
-  if (savedAppData.boards.length > 0) {
-    for (let board of savedAppData.boards) {
+  if (data && data.boards.length != 0) {
+    appData.currentBoard = data.currentBoard;
+
+    for (let board of data.boards) {
       let boardElement = new Board(board.name, board.id, board.tags, board.counter);
       
       for (let list of board.lists) {
@@ -762,5 +720,8 @@ async function loadData() {
   createBoardsList();
   renderBoard(appData.boards[appData.currentBoard]);
 }
+
+document.addEventListener("online", loadData());
+
 
 loadData();

@@ -1,4 +1,5 @@
 // run 'npx nodemon server.js'
+// depending on amount of things, it can take a while to load the data on a page refesh, unfortunately I dont think I can get it any quicker/
 
 import express from 'express';
 import sqlite3 from 'sqlite3';
@@ -7,6 +8,7 @@ import path from "path";
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { clear } from 'console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -45,46 +47,64 @@ export const runQuery = async (db, sql, params = []) => {
     });
 };
 
+const clearData = async () => {
+    await runQuery(db, 'PRAGMA foreign_keys = ON');
+    await runQuery(db, `DELETE FROM Boards`);
+};
+
 
 app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "public/index.html"));
 });
   
 
+
+let lock = false;     //needed as saving happens easically at the same time as loading on page refresh.
+
 app.post('/saveData', async (req, res) => {
+    while (lock) {
+        await new Promise((resolve) => setTimeout(resolve, 50)); // Wait 50ms before trying again
+    }
+    lock = true;
+    
+
     let appData = req.body;
 
-    await runQuery(db, `UPDATE Metadata SET currentBoard = ?`, [appData.currentBoard]);
-
-    await runQuery(db, 'PRAGMA foreign_keys = ON');
-    await runQuery(db, `DELETE FROM Boards`);   // should work to delete eveyrthing with ON DELETE CASCADE, foreign_keys is disable by defeualt though.
+    await runQuery(
+        db, 
+        `INSERT INTO Metadata (id, currentBoard) 
+            VALUES (1, ?) 
+            ON CONFLICT(id) DO UPDATE SET currentBoard = excluded.currentBoard`, 
+        [appData.currentBoard]
+    );
     
-    /*  // order should be like this otherwise tables will search for a parent and not find them. Shouldnt need to do though if ON DELETE CASCADE works
-        db.run(`DELETE FROM TaskTags`);
-        db.run(`DELETE FROM Tasks`);
-        db.run(`DELETE FROM Lists`);
-        db.run(`DELETE FROM Tags`);
-        db.run(`DELETE FROM Boards`);
-        db.run(`DELETE FROM Metadata`);
-    */
-
+    await clearData();
+    
     for (let board of appData.boards) {
         await runQuery(db, 
-            `INSERT OR REPLACE INTO Boards (id, name, counter) 
+            `INSERT INTO Boards (id, name, counter) 
             VALUES (?, ?, ?)`,
             [board.id, board.name, board.counter]
         );
 
+        for (let tag of board.tags) {
+            await runQuery(db, 
+                `INSERT INTO Tags (name, colour, boardId) 
+                VALUES (?, ?, ?)`,
+                [tag.name, tag.colour, board.id]
+            );
+        }
+
         for (let list of board.lists) {
             await runQuery(db, 
-                `INSERT OR REPLACE INTO Lists (id, name, parentBoardId) 
+                `INSERT INTO Lists (id, name, parentBoardId) 
                 VALUES (?, ?, ?)`,
                 [list.id, list.name, board.id]
             );
 
             for (let task of list.tasks) {
                 await runQuery(db, 
-                    `INSERT OR REPLACE INTO Tasks (id, title, body, taskListId) 
+                    `INSERT INTO Tasks (id, title, body, taskListId) 
                     VALUES (?, ?, ?, ?)`,
                     [task.id, task.title, task.body, list.id]
                 );
@@ -93,7 +113,7 @@ app.post('/saveData', async (req, res) => {
                     let tag = board.tags.find((t) => t.name === tagName);
                     if (tag) {
                         await runQuery(db, 
-                            `INSERT OR REPLACE INTO TaskTags (taskId, tagId) 
+                            `INSERT INTO TaskTags (taskId, tagId) 
                             VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
                             [task.id, tag.name, board.id]
                         );
@@ -101,26 +121,27 @@ app.post('/saveData', async (req, res) => {
                 }
             }
         }
-
-        for (let tag of board.tags) {
-            await runQuery(db, 
-                `INSERT OR REPLACE INTO Tags (name, colour, boardId) 
-                VALUES (?, ?, ?)`,
-                [tag.name, tag.colour, board.id]
-            );
-        }
     }
 
     res.status(200).send({ message: 'Data saved successfully.' });
+    lock = false;
 });
 
 
 
 app.get('/loadData', async (req, res) => {
+    while (lock) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    lock = true;
+    
+
     let appData = { boards: [], currentBoard: 0 };
 
     let boards = await allQuery(db, `SELECT * FROM Boards`)
-    if (boards.length == 0) return res.status(500).json(appData);
+    if (boards.length == 0) {
+        return res.status(200);
+    }
 
     for (let board of boards) {
         let boardElement = {
@@ -130,6 +151,9 @@ app.get('/loadData', async (req, res) => {
             lists: [],
             tags: []
         };
+
+        let tags = await allQuery(db, `SELECT * FROM Tags WHERE boardId = ?`, [board.id]);
+        boardElement.tags = tags.map((tag) => ({ name: tag.name, colour: tag.colour }));
 
         let lists = await allQuery(db, `SELECT * FROM Lists WHERE parentBoardId = ?`, [board.id]);
         for (let list of lists) {
@@ -165,30 +189,19 @@ app.get('/loadData', async (req, res) => {
             boardElement.lists.push(listElement);
         };
 
-        let tags = await allQuery(db, `SELECT * FROM Tags WHERE boardId = ?`, [board.id]);
-        boardElement.tags = tags.map((tag) => ({ name: tag.name, colour: tag.colour }));
-        
         appData.boards.push(boardElement);
     };
 
     let metadata = await getQuery(db, `SELECT * FROM Metadata LIMIT 1`);
     appData.currentBoard = metadata != null ? metadata.currentBoard : 0;
-
-    console.log(appData);
     
     res.status(200).json(appData);
+    lock = false;
 });
 
 
 app.get('/clearData', async (req, res) => {
-    db.serialize(() => {
-      db.run(`DELETE FROM Metadata`);
-      db.run(`DELETE FROM Boards`);
-      db.run(`DELETE FROM Lists`);
-      db.run(`DELETE FROM Tasks`);
-      db.run(`DELETE FROM Tags`);
-      db.run(`DELETE FROM TaskTags`);
-    });
+    clearData();
 });
 
 
