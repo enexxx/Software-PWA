@@ -708,7 +708,8 @@ function clearData() {
 
 
 async function saveData() {
-  console.log(appData, JSON.stringify(appData));
+  window.localStorage.setItem('appData', JSON.stringify(appData));  //for offline parity
+  
   let response = await fetch('http://localhost:3000/saveData', {
     method: 'POST',
     headers: {
@@ -724,42 +725,42 @@ async function saveData() {
 
 async function loadData() {
   let response = await fetch('http://localhost:3000/loadData');
-  if (response.ok) {
-    let savedAppData = await response.json();
-    console.log('Loaded data:', savedAppData);
+  let savedAppData;
 
-
-    appData.currentBoard = savedAppData.currentBoard;
-    
-    if (savedAppData.boards.length > 0) {
-      for (let board of savedAppData.boards) {
-        let boardElement = new Board(board.name, board.id, board.tags, board.counter);
-        
-        for (let list of board.lists) {
-          let listElement = new List(list.name, list.id, boardElement.id);
-          for (let task of list.tasks) {
-            let taskElement = new Task(task.title, task.body, task.id, task.tags, list.id);
-            listElement.tasks.push(taskElement);
-          }
-          boardElement.lists.push(listElement);
-        }
-        appData.boards.push(boardElement);
-      }
-      
-    }
-    else {
-      let newBoard = new Board("Untitled Board", 'b0');
-      appData.boards.push(newBoard);
-    }
-
-    createBoardsList();
-    renderBoard(appData.boards[appData.currentBoard]);
-
+  if (!response.ok) {
+    console.error('Failed to load data');
+    return;
+    //savedAppData = JSON.parse(window.localStorage.getItem('appData')); // Fallback to local storage   TODO uncomment when sql is working
   } 
   else {
-      console.error('Failed to load data');
+    savedAppData = await response.json();
   }
-}
 
+  appData.currentBoard = savedAppData.currentBoard;
+  
+  if (savedAppData.boards.length > 0) {
+    for (let board of savedAppData.boards) {
+      let boardElement = new Board(board.name, board.id, board.tags, board.counter);
+      
+      for (let list of board.lists) {
+        let listElement = new List(list.name, list.id, boardElement.id);
+        for (let task of list.tasks) {
+          let taskElement = new Task(task.title, task.body, task.id, task.tags, list.id);
+          listElement.tasks.push(taskElement);
+        }
+        boardElement.lists.push(listElement);
+      }
+      appData.boards.push(boardElement);
+    }
+    
+  }
+  else {
+    let newBoard = new Board("Untitled Board", 'b0');
+    appData.boards.push(newBoard);
+  }
+
+  createBoardsList();
+  renderBoard(appData.boards[appData.currentBoard]);
+}
 
 loadData();

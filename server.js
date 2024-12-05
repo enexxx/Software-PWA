@@ -1,4 +1,4 @@
-// run npx nodemon server.js
+// run 'npx nodemon server.js'
 
 import express from 'express';
 import sqlite3 from 'sqlite3';
@@ -18,20 +18,29 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 
-export const fetchAll = async (db, sql, params) => {
+export const allQuery = async (db, sql, params) => {
     return new Promise((resolve, reject) => {
       db.all(sql, params, (err, rows) => {
-        if (err) reject(err);
-        resolve(rows);
+            if (err) reject(err);
+            resolve(rows);
       });
     });
 };
   
-export const fetchFirst = async (db, sql, params) => {
+export const getQuery = async (db, sql, params) => {
     return new Promise((resolve, reject) => {
         db.get(sql, params, (err, row) => {
-        if (err) reject(err);
-        resolve(row);
+            if (err) reject(err);
+            resolve(row);
+        });
+    });
+};
+
+export const runQuery = async (db, sql, params = []) => {
+    return new Promise((resolve, reject) => {
+        db.run(sql, params, function (err) {
+            if (err) reject(err);
+            resolve();
         });
     });
 };
@@ -42,68 +51,76 @@ app.get("/", function (req, res) {
 });
   
 
-app.post('/saveData', (req, res) => {
+app.post('/saveData', async (req, res) => {
     let appData = req.body;
 
-    db.run(`UPDATE Metadata SET currentBoard = ?`, [appData.currentBoard]);
+    await runQuery(db, `UPDATE Metadata SET currentBoard = ?`, [appData.currentBoard]);
 
-    db.run(`DELETE FROM Boards`);
-    appData.boards.forEach((board) => {
-        db.run(
-            `INSERT INTO Boards (id, name, counter) 
+    await runQuery(db, 'PRAGMA foreign_keys = ON');
+    await runQuery(db, `DELETE FROM Boards`);   // should work to delete eveyrthing with ON DELETE CASCADE, foreign_keys is disable by defeualt though.
+    
+    /*  // order should be like this otherwise tables will search for a parent and not find them. Shouldnt need to do though if ON DELETE CASCADE works
+        db.run(`DELETE FROM TaskTags`);
+        db.run(`DELETE FROM Tasks`);
+        db.run(`DELETE FROM Lists`);
+        db.run(`DELETE FROM Tags`);
+        db.run(`DELETE FROM Boards`);
+        db.run(`DELETE FROM Metadata`);
+    */
+
+    for (let board of appData.boards) {
+        await runQuery(db, 
+            `INSERT OR REPLACE INTO Boards (id, name, counter) 
             VALUES (?, ?, ?)`,
             [board.id, board.name, board.counter]
         );
 
-        db.run(`DELETE FROM Lists WHERE parentBoardId = ?`, [board.id]);
-        board.lists.forEach((list) => {
-            db.run(
-                `INSERT INTO Lists (id, name, parentBoardId) 
-                    VALUES (?, ?, ?)`,
+        for (let list of board.lists) {
+            await runQuery(db, 
+                `INSERT OR REPLACE INTO Lists (id, name, parentBoardId) 
+                VALUES (?, ?, ?)`,
                 [list.id, list.name, board.id]
             );
 
-            db.run(`DELETE FROM Tasks WHERE taskListId = ?`, [list.id]);
-            list.tasks.forEach((task) => {
-                db.run(
-                    `INSERT INTO Tasks (id, title, body, taskListId) 
-                        VALUES (?, ?, ?, ?)`,
+            for (let task of list.tasks) {
+                await runQuery(db, 
+                    `INSERT OR REPLACE INTO Tasks (id, title, body, taskListId) 
+                    VALUES (?, ?, ?, ?)`,
                     [task.id, task.title, task.body, list.id]
                 );
 
-                db.run(`DELETE FROM TaskTags WHERE taskId = ?`, [task.id]);
-                task.tags.forEach((tagName) => {
-                    const tag = board.tags.find((t) => t.name === tagName);
+                for (let tagName of task.tags) {
+                    let tag = board.tags.find((t) => t.name === tagName);
                     if (tag) {
-                        db.run(
-                            `INSERT INTO TaskTags (taskId, tagId) 
-                                VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
+                        await runQuery(db, 
+                            `INSERT OR REPLACE INTO TaskTags (taskId, tagId) 
+                            VALUES (?, (SELECT id FROM Tags WHERE name = ? AND boardId = ?))`,
                             [task.id, tag.name, board.id]
                         );
                     }
-                });
-            });
-        });
+                }
+            }
+        }
 
-        db.run(`DELETE FROM Tags WHERE boardId = ?`, [board.id]);
-        board.tags.forEach((tag) => {
-            db.run(
-                `INSERT INTO Tags (name, colour, boardId) 
-                    VALUES (?, ?, ?)`,
+        for (let tag of board.tags) {
+            await runQuery(db, 
+                `INSERT OR REPLACE INTO Tags (name, colour, boardId) 
+                VALUES (?, ?, ?)`,
                 [tag.name, tag.colour, board.id]
             );
-        });
-    });
+        }
+    }
 
-    res.send('Data saved successfully.');
+    res.status(200).send({ message: 'Data saved successfully.' });
 });
+
 
 
 app.get('/loadData', async (req, res) => {
     let appData = { boards: [], currentBoard: 0 };
 
-    let boards = await fetchAll(db, `SELECT * FROM Boards`)
-    if (boards.length === 0) return res.json(appData);
+    let boards = await allQuery(db, `SELECT * FROM Boards`)
+    if (boards.length == 0) return res.status(500).json(appData);
 
     for (let board of boards) {
         let boardElement = {
@@ -114,7 +131,7 @@ app.get('/loadData', async (req, res) => {
             tags: []
         };
 
-        let lists = await fetchAll(db, `SELECT * FROM Lists WHERE parentBoardId = ?`, [board.id]);
+        let lists = await allQuery(db, `SELECT * FROM Lists WHERE parentBoardId = ?`, [board.id]);
         for (let list of lists) {
             let listElement = {
                 name: list.name,
@@ -123,7 +140,7 @@ app.get('/loadData', async (req, res) => {
                 tasks: []
             };
 
-            let tasks = await fetchAll(db, `SELECT * FROM Tasks WHERE taskListId = ?`, [list.id])
+            let tasks = await allQuery(db, `SELECT * FROM Tasks WHERE taskListId = ?`, [list.id]);
             for (let task of tasks) {
                 let taskElement = {
                     title: task.title,
@@ -133,7 +150,7 @@ app.get('/loadData', async (req, res) => {
                     taskListId: task.taskListId
                 };
 
-                let tags = await fetchAll(
+                let tags = await allQuery(
                     db,
                     `SELECT Tags.name FROM TaskTags 
                     INNER JOIN Tags ON TaskTags.tagId = Tags.id 
@@ -148,17 +165,33 @@ app.get('/loadData', async (req, res) => {
             boardElement.lists.push(listElement);
         };
 
-        let tags = await fetchAll(db, `SELECT * FROM Tags WHERE boardId = ?`, [board.id]);
+        let tags = await allQuery(db, `SELECT * FROM Tags WHERE boardId = ?`, [board.id]);
         boardElement.tags = tags.map((tag) => ({ name: tag.name, colour: tag.colour }));
         
         appData.boards.push(boardElement);
     };
 
-    let metadata = await fetchFirst(db, `SELECT * FROM Metadata LIMIT 1`)
-    appData.currentBoard = metadata.currentBoard >= 0 ? metadata.currentBoard : 0;
+    let metadata = await getQuery(db, `SELECT * FROM Metadata LIMIT 1`);
+    appData.currentBoard = metadata != null ? metadata.currentBoard : 0;
+
+    console.log(appData);
     
-    res.json(appData);
+    res.status(200).json(appData);
 });
+
+
+app.get('/clearData', async (req, res) => {
+    db.serialize(() => {
+      db.run(`DELETE FROM Metadata`);
+      db.run(`DELETE FROM Boards`);
+      db.run(`DELETE FROM Lists`);
+      db.run(`DELETE FROM Tasks`);
+      db.run(`DELETE FROM Tags`);
+      db.run(`DELETE FROM TaskTags`);
+    });
+});
+
+
 
 app.listen(3000, () => {
     console.log(`Server running on http://localhost:3000`);
