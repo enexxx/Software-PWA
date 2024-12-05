@@ -1,5 +1,8 @@
-// run 'npx nodemon server.js'
-// depending on amount of things, it can take a while to load the data on a page refesh, unfortunately I dont think I can get it any quicker/
+// run 'npm install' to instsall dependencies
+// run 'npx nodemon server.js' to start the server
+
+
+// depending on amount of things, it can take a while to load the data on a page refesh, unfortunately I dont think I can get it any quicker
 
 import express from 'express';
 import sqlite3 from 'sqlite3';
