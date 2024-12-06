@@ -194,9 +194,26 @@ p {
 	gap: 0.5rem;
 	padding: 0.5rem;
 	background-color: var(--list);
+	max-height: calc(85vh - 100px);
+	overflow-y: auto;
 	border-left: 1px solid rgba(108, 108, 108, 0.2);
 	border-right: 1px solid rgba(108, 108, 108, 0.2);
 }
+.taskListBody::-webkit-scrollbar {
+    width: 8px;
+}
+.taskListBody::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.taskListBody::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+.taskListBody::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 .taskList footer {
 	background-color: var(--list);
 	border: 1px solid rgba(108, 108, 108, 0.2);
