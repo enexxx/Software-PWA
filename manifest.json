@@ -1,0 +1,20 @@
+{
+    "name": "Kanban Software Engineering PWA",
+    "short_name": "Kanban PWA",
+    "start_url": "/public/index.html",
+    "display": "fullscreen",
+    "background_color": "#f9f9f9",
+    "theme_color": "#333",
+    "icons": [
+        {
+            "src": "public/images/icon-192x192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "public/images/icon-512x512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}
