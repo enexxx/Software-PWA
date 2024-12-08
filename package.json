@@ -17,6 +17,9 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0",
     "nodemon": "^3.1.7"
   },
   "type": "module"
