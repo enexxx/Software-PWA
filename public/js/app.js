@@ -388,11 +388,7 @@ class Task {
     this.tags = tags;
     this.taskListId = taskListId;
   }
-
-  getTaskList() {
-    return document.getElementById(this.taskListId);
-  }
-
+  
   editTask() {
     let taskElement = document.getElementById("task-" + this.id);
     taskElement.querySelector(".taskTitle");
