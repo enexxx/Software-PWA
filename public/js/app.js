@@ -83,7 +83,7 @@ function renderBoard(board) {
 
     let save = () => {
       currentBoard().name = input.value;
-      document.title = input.value;
+      document.title = 'Kanban | ' + input.value;
       title.innerText = input.value;
       input.replaceWith(title);
       createBoardsList();
