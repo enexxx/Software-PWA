@@ -5,10 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css"/>
-    <link rel="manifest" href="manifest.json">
     <script src="https://kit.fontawesome.com/29cd7725c3.js" crossorigin="anonymous"></script>
     <title>Kanban app</title>
-    <!--<link rel="manifest" href="manifest.json"/>-->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials"/>
 </head>
 
 <body>
@@ -21,19 +20,14 @@
                 <h1 id="boardTitle">board title</h1>
 
                 <div id="boardButtons">
-                    <button id="deleteButton" class="fa fa-trash"></button>
-                    <button id="darkModeToggle">Toggle Dark Mode</button>
-                    <!--
-                    <div id="tagsDropdown">
-                        <h3>Tags</h3>
-                        <ul id="globalTagsList"></ul>
-                        <div id="addTagContainer">
-                            <input type="text" id="newTagInput" maxlength="10">
-                            <input type="color" id="newTagColour" value="#ffffff">
-                            <button id="newTagButton">Add Tag</button>
+                    <label id="darkModeSwitch">
+                        <input id="darkModeInput" type="checkbox"/>
+                        <div id="darkModeSlider">
+                            <i class="fas fa-sun"></i>
+                            <i class="fas fa-moon"></i>
                         </div>
-                    </div>
-                -->
+                    </label>
+                    <button id="deleteButton" class="fa fa-trash"></button>
                 </div>
             </header>
 

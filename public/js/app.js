@@ -1,3 +1,14 @@
+if (navigator.online && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/serviceworker.js')
+      .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+      });
+}
+
+
 const boardContainer = document.getElementById('boardContainer');
 const listsContainer = document.getElementById('listsContainer');
 
@@ -12,20 +23,7 @@ const addBoardText = document.getElementById('addBoardText');
 const addBoardButton = document.getElementById('addBoardButton');
 
 const deleteButton = document.getElementById('deleteButton');
-
-/*
-const newTagButton = document.getElementById('newTagButton');
-const newTagInput = document.getElementById('newTagInput');
-const newTagColour = document.getElementById('newTagColour');
-
-const autoSaveButton = document.getElementById('autoSave');
-const settingsButton = document.getElementById('settingsButton');
-
-const listContextMenu = document.getElementById('listContextMenu');
-const listContextMenuDelete = document.getElementById('listContextMenuDelete');
-const listContextMenuClear = document.getElementById('listContextMenuClear');
-const listContextMenuDuplicate = document.getElementById('listContextMenuDuplicate');
-*/
+const darkModeInput = document.getElementById('darkModeInput');
 
 const title = document.getElementById('boardTitle');
 
@@ -73,13 +71,18 @@ function createBoardsList() {
 
 function renderBoard(board) {
   appData.currentBoard = appData.boards.indexOf(board);
-  document.title = currentBoard().name;
+  document.title = 'Kanban | ' + currentBoard().name;
   title.innerText = currentBoard().name;
   title.addEventListener('click', (e) => {
     let input = document.createElement('input');
     input.value = title.textContent;
-    input.classList.add('boardTitle');
+    input.classList.add('boardTitle', 'editableInput');
+    input.placeholder = 'Board Title';
     input.maxLength = 64;
+
+    let style = window.getComputedStyle(title)
+    input.style.fontSize = style.fontSize;
+
     title.replaceWith(input);
 
     let save = () => {
@@ -111,6 +114,7 @@ function renderAllLists() {
   new Sortable(listsContainer, {
     group: "lists",
     animation: 150,
+    handle: '.taskListHeader',
 
     onEnd: function (evt) {
       const { oldIndex, newIndex } = evt;
@@ -227,25 +231,32 @@ class List {
           taskElement.id = 'task-' + task.id;
           taskElement.className = "task"
 
+          let taskTitleContainer = document.createElement('div');
+          taskTitleContainer.classList.add('taskTitleContainer');
+
 
           let taskTitle = document.createElement('p');
           taskTitle.innerText = task.title;
           taskTitle.classList.add('taskTitle');
 
-
           let taskButtons = document.createElement('span');
           taskButtons.classList.add('taskButtons');
-
-          let taskDeleteButton = document.createElement('i');
-          taskDeleteButton.classList.add('taskDeleteButton', 'fa-solid', 'fa-trash');
-          taskDeleteButton.addEventListener('click', () => {currentLists().find(l => l.id === task.taskListId).removeTask(task);});
 
           let taskEditButton = document.createElement('i');
           taskEditButton.classList.add('taskEditButton', 'fa-solid', 'fa-pen');
           taskEditButton.addEventListener('click', () => { task.editTask(); });
 
-          taskButtons.appendChild(taskDeleteButton);
+          let taskDeleteButton = document.createElement('i');
+          taskDeleteButton.classList.add('taskDeleteButton', 'fa-solid', 'fa-trash');
+          taskDeleteButton.addEventListener('click', () => {currentLists().find(l => l.id === task.taskListId).removeTask(task);});
+
+
           taskButtons.appendChild(taskEditButton);
+          taskButtons.appendChild(taskDeleteButton);
+
+
+          taskTitleContainer.appendChild(taskTitle);
+          taskTitleContainer.appendChild(taskButtons);
 
 
           let taskTags = document.createElement('span');
@@ -267,8 +278,7 @@ class List {
           taskBody.classList.add('taskBody');
           
 
-          taskElement.appendChild(taskTitle);
-          taskElement.appendChild(taskButtons);
+          taskElement.appendChild(taskTitleContainer);
           taskElement.appendChild(taskTags);
           taskElement.appendChild(taskBody);
           
@@ -278,8 +288,16 @@ class List {
       new Sortable(taskListElement, {
         group: "tasks",
         animation: 150,
+        revertOnSpill: true,
+        ghostClass: "ghostTask",
+        chosenClass: "chosenTask",
     
+        onStart: (evt) => {
+          document.body.classList.add('disableTaskHover'); // janky but it works
+        },
         onEnd: (evt) => {
+          document.body.classList.remove('disableTaskHover');
+
           let movedTask = this.tasks[evt.oldIndex];
           movedTask.taskListId = evt.to.parentElement.id;
   
@@ -288,7 +306,7 @@ class List {
           currentLists().find(l => l.id === evt.to.parentElement.id).tasks.splice(evt.newIndex, 0, movedTask);
   
           saveData();
-        }
+        },
       });
       
 
@@ -296,9 +314,9 @@ class List {
   }
 
   generateElement() {
-      // Header container
       let listHeader = document.createElement('header');
-      // List title
+      listHeader.classList.add('taskListHeader');
+
       let listTitle = document.createElement('h2');
       listTitle.id = 'title-' + this.id;
       listTitle.innerText = this.name;
@@ -306,8 +324,13 @@ class List {
       listTitle.addEventListener('click', (e) => {
           let input = document.createElement('input');
           input.value = listTitle.textContent;
-          input.classList.add('listTitle');
+          input.classList.add('listTitle', 'editableInput');
+          input.placeholder = 'List Title';
           input.maxLength = 128;
+
+          let style = window.getComputedStyle(listTitle)
+          input.style.fontSize = style.fontSize;
+
           listTitle.replaceWith(input);
 
           let save = () => {
@@ -319,21 +342,22 @@ class List {
           input.addEventListener('blur', save, {once: true});
           input.focus();
       });
-      // Delete list button
+
       let listDeleteButton = document.createElement('i');
       listDeleteButton.classList.add('listDeleteButton', 'fa-solid', 'fa-trash');
       listDeleteButton.addEventListener('click', () => {
-        // Remove the card from the cards list based on its index position.
+
         currentLists().splice(currentLists().indexOf(this), 1);
         renderList(this.id);
       });
       listHeader.appendChild(listTitle);
       listHeader.appendChild(listDeleteButton);
 
-      // Button container.
+
       let listFooter = document.createElement('footer');
-      // Add task button
-      let listButton = document.createElement('button');
+      listHeader.classList.add('taskListFooter');
+
+      let listButton = document.createElement('div');
       listButton.id = 'button-' + this.id;
       listButton.classList.add("addTaskButton");
       listButton.innerText = '+';
@@ -381,17 +405,19 @@ class Task {
     let taskElement = document.getElementById('task-'+this.id);
     taskElement.querySelector('.taskTitle')
 
-    // Replace task title with input field
+
     let titleInput = document.createElement('textarea');
     titleInput.value = this.title;
-    titleInput.classList.add('taskTitle');
-    titleInput.maxLength = 256;
+    titleInput.classList.add('taskTitle', 'taskTitleInput');
+    titleInput.placeholder = 'Title';
+    titleInput.maxLength = 16;
     taskElement.querySelector('.taskTitle').replaceWith(titleInput);
 
-    // Replace task body with textarea
+
     let bodyInput = document.createElement('textarea');
     bodyInput.value = this.body;
-    bodyInput.classList.add('taskBody');
+    bodyInput.classList.add('taskBody', 'taskBodyInput');
+    bodyInput.placeholder = 'Body';
     taskElement.querySelector('.taskBody').replaceWith(bodyInput);
 
 
@@ -400,28 +426,7 @@ class Task {
     let createTagEditables = function(tagElement, task) { 
       let tagName = tagElement.textContent
       let tag = currentBoard().findTag(tagName);
-
-      /*
-      let tagTitle = document.something or other
-      tagTitle.addEventListener('click', (e) => {
-          let input = document.createElement('input');
-          input.value = tagTitle.textContent;
-          input.maxLength = 128;
-          tagTitle.replaceWith(input);
-
-          let save = () => {
-              this.name = input.value;
-              if (this.name.length === 0) this.name = 'New'
-              renderAllLists();
-              document.removeEventListener('click', listenClickOutside);
-              task.editTask();    //janky but it works
-          };
-
-          input.addEventListener('blur', save, {once: true});
-          input.focus();
-      });
-      */
-
+   
       let tagColourPicker = document.createElement('input');
       tagColourPicker.type = 'color';
       tagColourPicker.value = '#ffffff';
@@ -436,6 +441,7 @@ class Task {
   
       let tagRemoveButton = document.createElement('i');
       tagRemoveButton.classList.add('fa-solid', 'fa-times');
+      tagRemoveButton.classList.add('tagRemoveButton');
       tagRemoveButton.addEventListener('click', () => {
         task.removeTag(tagName);
         for (let tag in taskElement.childNodes) {
@@ -473,7 +479,8 @@ class Task {
 
             let newTagElement = tagElement.cloneNode(true)
             createTagEditables(newTagElement, this);
-            taskTags.insertBefore(newTagElement, taskTags.childNodes[taskTags.childNodes.length - 1]);            
+            taskTags.insertBefore(newTagElement, taskTags.childNodes[taskTags.childNodes.length - 2]);
+
           }
         });
 
@@ -481,14 +488,18 @@ class Task {
     }
 
     let newTagOption = document.createElement('li');
+    newTagOption.classList.add('newTagOption');
 
     let dropdownTagInput = document.createElement('input');
-    dropdownTagInput.maxLength = 10;
     dropdownTagInput.classList.add('dropdownTagInput');
+    dropdownTagInput.placeholder = 'Tag Name';
+    dropdownTagInput.maxLength = 10;
+
     let dropdownTagColour = document.createElement('input');
     dropdownTagColour.type = 'color';
     dropdownTagColour.value = '#ffffff';
     dropdownTagColour.classList.add('dropdownTagColour');
+
     let newTagButton = document.createElement('i');
     newTagButton.classList.add('newTagButton', 'fa-solid', 'fa-plus');
     newTagButton.addEventListener('click', () => {
@@ -520,11 +531,11 @@ class Task {
     let tagButton = document.createElement('i');
     tagButton.classList.add('tagButton', 'fa-solid', 'fa-plus');
     tagButton.addEventListener('click', () => {
-      tagDropdown.style.display = 'inline-block';
+      tagDropdown.style.display = 'inline-flex';
     });
 
-    tagButton.appendChild(tagDropdown);
     taskTags.appendChild(tagButton);
+    taskTags.appendChild(tagDropdown);
 
 
     let cancelButton = document.createElement('i');
@@ -600,51 +611,31 @@ class Task {
   });
   
   
-  /*  // probably dont need.
-  newTagButton.addEventListener('click', () => {
-    let tagName = newTagInput.value;
-    if (tagName.length === 0) tagName = 'New';
-    let tagColour = newTagColour.value;
-  
-    let newTag = { name: tagName, colour: tagColour };
-    currentBoard().addTag(newTag);
-  
-    newTagInput.value = '';
-  });
-  */
-  
-  
-  document.getElementById("darkModeToggle").addEventListener("click", () => {
-    document.documentElement.classList.toggle("dark-mode");
-    const isDarkMode = document.documentElement.classList.contains("dark-mode");
-    localStorage.setItem("darkMode", isDarkMode ? "enabled" : "disabled");
-  });
-  
-  if (localStorage.getItem("darkMode") === "enabled") {
-    document.documentElement.classList.add("dark-mode");
-  }
-  
 
+darkModeInput.addEventListener('change', () => {
+  document.documentElement.classList.toggle('darkMode', darkModeInput.checked);
+  localStorage.setItem('darkMode', darkModeInput.checked ? 'enabled' : 'disabled');
+});
+
+
+if (localStorage.getItem('darkMode') === 'enabled') {
+  darkModeInput.checked = true;
+  document.documentElement.classList.add('darkMode');
+}
 
   
   
   // <========== Sidebar ===========>
-  // TODO rewrite this
   
   function toggleSidebar() {
-    if (('toggled' in sidebar.dataset)) {
-        delete sidebar.dataset.toggled;
-        sidebar.style.width = "0";
-        sidebar.style.boxShadow = "unset";
+    if (sidebar.dataset.toggled === 'true') {
+        sidebar.dataset.toggled = 'false';
   
-        // Remove listen click outside of side
         document.removeEventListener('click', listenClickOutside);
     }
     else {
-        sidebar.dataset.toggled = '';
-        sidebar.style.width = "250px";
-        sidebar.style.boxShadow = "100px 100px 0 100vw rgb(0 0 0 / 50%)";
-        // Listen click outside of sidebar
+        sidebar.dataset.toggled = 'true';
+
         setTimeout(() => {
             document.addEventListener('click', listenClickOutside);
         }, 300);
@@ -656,7 +647,7 @@ class Task {
   
   function listenClickOutside(event) {
     const withinBoundaries = event.composedPath().includes(sidebar);
-    if (!withinBoundaries && sidebar.style.width === "250px") {
+    if (!withinBoundaries && sidebar.style.width != "0px") {
         toggleSidebar();
     }
   }
@@ -680,11 +671,17 @@ async function saveData() {
     }    
   }
   else {
+    window.localStorage.removeItem('appData');
     window.localStorage.setItem('appData', JSON.stringify(appData));  //for offline parity
   }
 }
 
 async function loadData() {
+  let loadingSpinner = document.createElement('div');
+  loadingSpinner.classList.add('loadingSpinner');
+  boardContainer.appendChild(loadingSpinner);
+  
+  
   let data;
   if (navigator.online) {
     let response = await fetch('http://localhost:3000/loadData');
@@ -695,6 +692,7 @@ async function loadData() {
   }
 
   if (data && data.boards.length != 0) {
+    appData = { boards: [], currentBoard: 0 };
     appData.currentBoard = data.currentBoard;
 
     for (let board of data.boards) {
@@ -717,11 +715,13 @@ async function loadData() {
     appData.boards.push(newBoard);
   }
 
+  loadingSpinner.remove();
+
   createBoardsList();
   renderBoard(appData.boards[appData.currentBoard]);
 }
 
-document.addEventListener("online", loadData());
+//document.addEventListener("online", loadData());  // makes the loadData call twice if starting online
 
 
 loadData();

@@ -1,322 +1,710 @@
 :root {
-	--bg: #f9f9f9;
-	--text: #333;
-	--board: #fff;
-	--list: #f2f3f5;
-	--tag-1: #d6ede2;
-	--tag-1-text: #13854e;
-	--tag-2: #ceecfd;
-	--tag-2-text: #2d86ba;
-	--tag-3: #f2dcf5;
-	--tag-3-text: #a734ba;
+    --bg:#fff;
+    --text:#5a5b5d;
+    --text2:#fff;
+    --board:#fbfcff;
+    --list:#f7f9ff;
+    --border:#dbdde2;
+    --task:#fbfcff;
+    --primary-color:#f597db;
+    --primary-hover:#f5d0f7;
+    --secondary-color:#afc9fb;
+    --secondary-hover:#cfd7fe
 }
-  
-:root.dark-mode {
-	--bg: #1e1e1e;
-	--text: #f0f0f0;
-	--board: #2e2e2e;
-	--list: #252525;
-	--tag-1: #d6ede2;
-	--tag-1-text: #13854e;
-	--tag-2: #ceecfd;
-	--tag-2-text: #2d86ba;
-	--tag-3: #f2dcf5;
-	--tag-3-text: #a734ba;
+    
+:root.darkMode {
+    --bg:#2c2c37;
+    --text:#fff;
+    --text2:#5a5b5d;
+    --board:#24242f;
+    --list:#2c2c36;
+    --border:#393941;
+    --task:#24242f;
+    --primary-color:#6462ac;
+    --primary-hover:#8b88c5;
+    --secondary-color:#47bfe3;
+    --secondary-hover:#8acce0
 }
-
+    
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	font-family: 'Poppins', sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif
 }
+    
 body {
-	color: var(--text);
-	background-color: var(--bg);
-	width: 100%;
-	min-height: 100vh;
+    color:var(--text);
+    background-color:var(--board);
+    width:100%;
+    height:100%
 }
+    
 p {
-	word-break: break-all;
-	text-overflow: ellipsis;
+    word-break:break-all;
+    text-overflow:ellipsis
 }
-
-
+    
 #sidebar {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #233138;
-    overflow-x: hidden;
-    transition: width 0.5s;
-    padding-top: 4rem;
+    height:100%;
+    width:0;
+    position:fixed;
+    padding:0;
+    z-index:1;
+    top:0;
+    left:0;
+    background-color:var(--bg);
+    overflow-x:hidden;
+    transition:width .5s;
+    padding-top:4rem;
+    white-space:nowrap;
+    overflow:hidden
 }
-
-#sidebar p {
-    font-size: 1.5rem;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-    text-align: center;
+    
+#sidebar[data-toggled="true"] {
+    border-right:1px solid var(--primary-color);
+    width:250px;
+    padding:.5rem
 }
-
-#sidebar p:hover {
-    color: white;
+    
+ #sidebar p {
+    font-size:1.5rem;
+    color:var(--text);
+    display:block;
+    transition:.3s;
+    text-align:center
 }
-
+    
 #sidebar > ul {
-    list-style: none;
-    padding-left: 0;
-}
-
+    list-style:none;
+    padding-left:0
+ }
+    
 #sidebar > ul > li {
-    font-size: 1rem;
-    color: black;
-    background-color: #f3f3f3;
-    padding: 0.5rem;
-    margin-inline: 1em;
-    margin-bottom: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 3px 3px var(--primary-color-light);
+    font-size:1rem;
+    color:var(--text);
+    background-color:var(--task);
+    border:1px solid var(--border);
+    padding:.5rem;
+    margin-inline:1em;
+    margin-bottom:1rem;
+    border-radius:.5rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis
+ }
+    
+#sidebar > ul > li.active {
+    box-shadow:3px 3px var(--primary-color)
+ }
+    
+#sidebar > ul > li.active:hover {
+    box-shadow:3px 3px var(--primary-hover)
 }
-
-#sidebar > ul > li.is-active {
-    box-shadow: 3px 3px yellow;
-}
-
-#sidebar > ul > li.is-active:hover {
-    box-shadow: 3px 3px orange;
-}
-
+    
 #sidebar > ul > li:hover {
-    color: var(--primary-color-dark);
-    cursor: pointer;
-    box-shadow: 3px 3px var(--primary-color-dark);
-}
-  
-#sidebar #sidebar-close {
-    color: gray;
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 2.25rem;
-    margin-left: 50px;
+    cursor:pointer;
+    border:1px solid var(--primary-hover)
 }
 
+#sidebar #sidebarClose {
+    color:var(--text);
+    cursor:pointer;
+    position:absolute;
+    top:0;
+    right:25px;
+    font-size:2rem;
+    margin-left:50px
+}
+    
 #sidebarSearchField {
-	display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 0.5rem;
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+    gap:.5rem
 }
-
-
-#boardTitle {
-	padding: 1rem 0 0 1rem;
-}
-
+    
 #boardContainer {
-    display: flex;
-    overflow-x: auto;
-    padding: 1rem;
-	margin-top: 2rem;
-    gap: 1rem;
-    align-items: flex-start;
-	height: 100%;
-    white-space: nowrap;
-	scroll-behavior: smooth;
+    display:flex;
+    overflow-x:auto;
+    padding:1rem;
+    padding-top:2rem;
+    gap:1rem;
+    align-items:flex-start;
+    height:calc(100dvh - 80px);
+    white-space:nowrap;
+    scroll-behavior:smooth;
+    background-color:var(--board)
 }
-
+    
 #listsContainer {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: nowrap;
+    display:flex;
+    gap:1rem;
+    flex-wrap:nowrap
 }
-
+    
 #addListButton {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #d3d3d3;
-    border: 2px dashed #888;
-    border-radius: 8px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    flex-shrink: 0;
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    background-color:var(--task);
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:1.5rem;
+    cursor:pointer;
+    flex-shrink:0
 }
-
+    
 #boardContainer::-webkit-scrollbar {
-	height: 13px;
+    height:13px
 }
-
-#boardContainer::-webkit-scrollbar-thumb {
-	background-color: rgba(108, 108, 108, 0.5);
-	border-radius: 4px;
-}
-
+    
 #boardContainer::-webkit-scrollbar-track {
-	background-color: rgba(108, 108, 108, 0.1);
+    background-color:var(--list)
+ }
+    
+#boardContainer::-webkit-scrollbar-thumb {
+    background-color:var(--primary-color);
+    border-radius:4px
 }
-
+    
+#boardContainer::-webkit-scrollbar-thumb:hover {
+    background-color:var(--primary-hover)
+}
+    
 .taskList {
-	flex: 0 0 300px;
-	min-width: 300px;
+    flex:0 0 300px;
+    width:300px
 }
-.taskList header {
-	background-color: var(--list);
-	border: 1px solid rgba(108, 108, 108, 0.2);
-	border-radius: 8px 8px 0 0;
+    
+.taskList > header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background-color:var(--list);
+    border:1px solid var(--border);
+    border-radius:8px 8px 0 0;
+    font-size:12px;
+    padding:1rem
 }
-.taskList header h2 {
-	font-size: 15px;
-	padding: 0.7rem;
+    
+.taskList header > h2 {
+    display:inline-block
 }
-.taskList header i {
-    display: inline-block;
-    font-size: 10px;
-    margin-right: 0.2rem;
+    
+.taskList header > i {
+    display:inline-block;
+    margin-right:.2rem
 }
-.taskList header button {
-	background: transparent;
-	color: var(--light-grey);
-	font-size: 18px;
-	border: 0;
-	cursor: pointer;
+    
+.taskList header > button {
+    background:transparent;
+    color:var(--light-grey);
+    font-size:18px;
+    border:0;
+    cursor:pointer
 }
+    
 .taskListBody {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	gap: 0.5rem;
-	padding: 0.5rem;
-	background-color: var(--list);
-	max-height: calc(85vh - 100px);
-	overflow-y: auto;
-	border-left: 1px solid rgba(108, 108, 108, 0.2);
-	border-right: 1px solid rgba(108, 108, 108, 0.2);
-}
-.taskListBody::-webkit-scrollbar {
-    width: 8px;
-}
-.taskListBody::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-.taskListBody::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-.taskListBody::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:.5rem;
+    padding:.5rem;
+    background-color:var(--list);
+    max-height:calc(80dvh - 80px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    border-left:1px solid var(--border);
+    border-right:1px solid var(--border)
+ }
+    
 .taskList footer {
-	background-color: var(--list);
-	border: 1px solid rgba(108, 108, 108, 0.2);
-	border-radius: 0 0 8px 8px;
-	width: 100%;
-}
-
+    background-color:var(--list);
+    border:1px solid var(--border);
+    border-radius:0 0 8px 8px;
+    width:100%
+ }
+    
 .taskList footer:hover {
-    opacity: 80%;
-}
-
+    opacity:80%
+ }
+    
 .addTaskButton {
-	background: none;
-	border: none;
-	font-size: 13px;
-	width: 100%;
-	opacity: 50%;
-	padding: 1rem;
+    font-size:13px;
+    text-align:center;
+    width:100%;
+    opacity:50%;
+    padding:1rem
 }
-.addTaskButton i {
-    display: inline-block;
-    font-size: 10px;
-    margin-right: 0.2rem;
-}
-
+    
 .addListButton {
-	background: none;
-	border: none;
-	font-size: 13px;
-	padding: 1rem;
+    background:none;
+    border:none;
+    font-size:13px;
+    padding:1rem
 }
-
+    
 .task {
-	cursor: move;
-	list-style: none;
-	background-color: var(--white);
-	padding: 0.7rem;
-	border-radius: 8px;
-	width: 100%;
-	border: 2px solid rgba(108, 108, 108, 0.2);
+    cursor:move;
+    list-style:none;
+    background-color:var(--task);
+    padding:.7rem;
+    border-radius:8px;
+    width:100%;
+    border:2px solid var(--border)
 }
-.task:hover {
-	border: 2px dashed rgba(108, 108, 108, 0.5);
-}
+    
 .task p {
-	font-size: 15px;
+    font-size:15px;
+    white-space:initial
 }
-
+    
+.taskBody {
+    margin-top:.5rem
+}
+    
 .taskHead {
-	margin-bottom: 0.7rem;
+    margin-bottom:.7rem
 }
+    
 .taskTitleContainer {
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between
 }
+    
 .taskTitle {
-	font-weight: bolder;
-
+    font-weight:bolder
 }
-
+    
+.taskButtons {
+    display:inline-flex;
+    gap:.4rem
+}
+    
 .taskEditButton,
 .taskDeleteButton,
 .listDeleteButton {
-	opacity: 0%;
-	background-color: transparent;
-	border: 0;
-	color: var(--light-grey);
-	font-size: 15px;
+    opacity:0;
+    background-color:transparent;
+    border:0;
+    font-size:15px;
+    pointer-events:none;
+    transition:opacity .3s ease-in-out
 }
+    
 .task:hover .taskEditButton,
 .task:hover .taskDeleteButton,
 .taskList header:hover .listDeleteButton {
-	opacity: 50%;
+    opacity:50%;
+    pointer-events:auto
 }
-
+    
+@media (hover: none) and (pointer: coarse) {
+    .taskEditButton,
+    .taskDeleteButton,
+    .listDeleteButton {
+    opacity:0;
+    pointer-events:none
+}
+    
+.task:active .taskEditButton,
+.task:active .taskDeleteButton,
+.taskList header:active .listDeleteButton {
+    opacity:50%;
+    pointer-events:auto
+}
+}
+    
+.taskList header,
+.taskListBody,
+.taskList footer {
+    box-shadow:0 4px 8px rgba(0,0,0,0.2)
+}
+    
+.task {
+    transition:all .3s
+}
+    
+.task:hover {
+    border:2px solid var(--primary-color);
+    box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    transform:translateY(-2px)
+}
+    
+.ghostTask {
+    border:2px solid var(--primary-color);
+    box-shadow:0 4px 6px rgba(0,0,0,0.2);
+    background-color:var(--white);
+    opacity:.6;
+    transform:scale(0.95)
+}
+    
+body.disableTaskHover .task:hover {
+    border:2px solid var(--border)!important;
+    box-shadow:none!important;
+    transform:none!important
+    }
+    
+body.disableTaskHover .task:hover .taskEditButton,
+body.disableTaskHover .task:hover .taskDeleteButton {
+    opacity:0!important;
+    pointer-events:none!important
+}
+    
 .tagButton {
-    background: none;
-    border: 1px dashed #ccc;
-    cursor: pointer;
-    margin-top: 5px;
-    font-size: 12px;
+    font-size:1rem;
+    color:var(--text);
+    background-color:var(--primary-color);
+    border:none;
+    border-radius:4px;
+    padding:.5rem;
+    cursor:pointer;
+    transition:background-color 0.3s,transform .2s
 }
-
-
+    
+.tagButton:hover {
+    background-color:var(--primary-hover);
+    transform:scale(1.05)
+}
+    
+button:hover {
+    background-color:var(--secondary-hover)
+}
+    
+button {
+    background:var(--primary-color);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:.5rem 1rem;
+    font-size:1rem;
+    cursor:pointer;
+    box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    transition:all .3s ease
+}
+    
+button:hover {
+    background:var(--primary-hover);
+    transform:scale(1.05)
+ }
+    
+.newTagOption {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:.5rem
+}
+    
 .taskTags {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin-top: 10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem;
+    margin-top:.5rem
 }
-
+    
 .taskTag {
-    display: inline-flex;
-    align-items: center;
-    background-color: #eee;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    gap: 5px;
+    display:inline-flex;
+    align-items:center;
+    border-radius:12px;
+    font-size:.85rem;
+    font-weight:700;
+    cursor:pointer;
+    color:var(--text2);
+    background-color:var(--list);
+    padding:5px 10px;
+    transition:transform .2s ease,background-color .2s ease
 }
-
-.taskTags:empty {
-    display: none;
+    
+.taskTag:hover {
+    transform:scale(1.1)
+}
+    
+.tagColourPicker[type="color" i] {
+    border-radius:50%;
+    inline-size:30px;
+    block-size:30px;
+    padding:3px;
+    border:none;
+    background-color:transparent
+}
+    
+.tagRemoveButton {
+    font-size:1rem;
+    color:var(--text2);
+    background:none;
+    border:none;
+    cursor:pointer;
+    transition:color .2s
+}
+    
+.tagRemoveButton:hover {
+    color:var(--primary-color)
+}
+    
+.newTagOption {
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    margin:.5rem 0
+}
+    
+.tagDropdown {
+    border:1px solid var(--border);
+    background:rgba(0,0,0,0.1);
+    padding:.5rem;
+    flex-wrap:wrap;
+    gap:.5rem
+}
+    
+.dropdownTagInput {
+    flex:1;
+    border:1px solid var(--border);
+    background:rgba(0,0,0,0.1);
+    color:var(--text);
+    border-radius:4px;
+    font-size:.85rem;
+    transition:border-color 0.3s,box-shadow .3s
+}
+    
+.dropdownTagInput:focus {
+    border-color:var(--primary-color);
+    box-shadow:0 0 5px var(--primary-color);
+    outline:none
+}
+    
+.dropdownTagColour[type="color" i] {
+    border-radius:50%;
+    inline-size:30px;
+    block-size:30px;
+    padding:3px;
+    border:none;
+    background-color:transparent
+}
+    
+.newTagButton {
+    font-size:1rem;
+    color:var(--text);
+    background-color:var(--primary-color);
+    border:none;
+    border-radius:4px;
+    padding:.5rem;
+    cursor:pointer;
+    transition:background-color 0.3s,transform .2s
+}
+    
+.newTagButton:hover {
+    background-color:var(--primary-hover);
+    transform:scale(1.05)
+}
+    
+.taskTitleInput,
+.taskBodyInput {
+    border:none;
+    outline:none;
+    resize:none;
+    background:rgba(0,0,0,0.1);
+    color:var(--text);
+    width:100%;
+    padding:0;
+    transition:background-color .2s ease
+}
+    
+.taskTitleInput:focus,
+.taskBodyInput:focus {
+    border-radius:4px;
+    padding:.2rem
+}
+    
+.taskListBody::-webkit-scrollbar {
+    width:8px
+}
+    
+.taskListBody::-webkit-scrollbar-track {
+    background-color:var(--task)
+}
+    
+.taskListBody::-webkit-scrollbar-thumb {
+    background-color:var(--primary-color);
+    border-radius:4px
+}
+    
+.taskListBody::-webkit-scrollbar-thumb:hover {
+    background-color:var(--primary-hover)
+}
+    
+input,
+textarea {
+    border:1px solid var(--text);
+    border-radius:8px;
+    padding:.5rem;
+    width:100%;
+    font-size:1rem;
+    transition:all .3s
+}
+    
+input:focus,
+textarea:focus {
+    border-color:var(--primary-color);
+    box-shadow:0 0 4px var(--primary-color);
+    outline:none
+}
+    
+#appContainer > header {
+    background:var(--bg);
+    border-bottom:1px solid var(--primary-color);
+    padding:.7rem;
+    display:flex;
+    gap:.5rem;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    top:0;
+    height:80px;
+    position:sticky
+}
+    
+#appContainer #boardButtons {
+    display:flex;
+    gap:.7rem;
+    justify-content:space-between;
+    align-items:center
+}
+    
+#appContainer > header > h1 {
+    font-size:1.5rem;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis
+}
+    
+#appContainer > header button {
+    background:var(--secondary-color);
+    color:var(--text);
+    margin:0;
+    border-radius:8px
+}
+    
+#appContainer > header button:hover {
+    background:var(--secondary-hover)
+}
+    
+#darkModeSwitch {
+    display:inline-flex;
+    align-items:center;
+    justify-content:space-between;
+    width:60px;
+    height:34px;
+    cursor:pointer
+}
+    
+#darkModeInput {
+    display:none
+}
+    
+#darkModeSlider {
+    width:100%;
+    height:100%;
+    background-color:var(--board);
+    border:2px solid var(--secondary-color);
+    border-radius:34px;
+    transition:background-color .4s;
+    position:relative
+}
+    
+#darkModeSlider:before {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:4px;
+    transform:translateY(-50%);
+    background-color:var(--secondary-color);
+    transition:.4s;
+    height:26px;
+    width:26px;
+    border-radius:50%;
+    transition:.4s
+}
+    
+#darkModeInput:checked + #darkModeSlider:before {
+    transform:translate(22px,-50%)
+}
+    
+#darkModeSlider i {
+    position:absolute;
+    font-size:18px;
+    color:var(--text);
+    top:6px;
+    transform:translateX(50%);
+    transition:opacity .4s
+}
+    
+#darkModeSlider .fa-sun {
+    left:-1px;
+    opacity:1
+}
+    
+#darkModeSlider .fa-moon {
+    right:17px;
+    opacity:0
+}
+    
+#darkModeInput:checked + #darkModeSlider .fa-sun {
+    opacity:0
+}
+    
+#darkModeInput:checked + #darkModeSlider .fa-moon {
+    opacity:1
+}
+    
+.editableInput {
+    border:none;
+    outline:none;
+    font-family:inherit;
+    font-weight:700;
+    color:inherit;
+    margin:0;
+    padding:0;
+    max-width:50%;
+    background-color:rgba(0,0,0,0.1);
+    border-radius:4px;
+    width:auto;
+    display:inline-block;
+    transition:background-color .2s ease
+}
+    
+.editableInput:focus {
+    background-color:rgba(0,0,0,0.2)
+}
+    
+.loadingSpinner {
+    border:4px solid var(--text2);
+    border-top:4px solid var(--primary-color);
+    border-radius:50%;
+    width:30px;
+    height:30px;
+    animation:spin 1s linear infinite
+}
+    
+@keyframes spin {
+    0% {
+        transform:rotate(0deg)
+    }
+    
+    100% {
+        transform:rotate(360deg)
+    }
+}
+    
+@media (max-width: 768px) {
+    .taskListBody {
+        max-height:calc(70dvh - 80px)
+    }
+    
+    .taskList {
+        flex:0 0 200px;
+        width:200px
+    }
 }
