@@ -27,11 +27,11 @@ const darkModeInput = document.getElementById("darkModeInput");
 
 const title = document.getElementById("boardTitle");
 
-var appData = {
+let appData = {
   boards: [],
   currentBoard: 0,
 };
-counter = 0;
+let counter = 0;
 
 setInterval(function () {
   saveData();
@@ -685,7 +685,12 @@ async function loadData() {
       );
 
       for (let list of board.lists) {
-        let listElement = new List(list.name, list.id, boardElement.id);
+        let listElement = new List(
+          list.name,
+          list.id,
+          boardElement.id
+        
+        );
         for (let task of list.tasks) {
           let taskElement = new Task(
             task.title,
