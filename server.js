@@ -1,5 +1,6 @@
 // run 'npm install' to instsall dependencies
 // run 'npx nodemon server.js' to start the server
+// please make sure you're autheticated with the detnsw website, else you may encounter a bug with connecting to fontawesome, making the page not work.
 
 
 

@@ -1,3 +1,5 @@
+// Service worker registration
+
 if (navigator.online && "serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("/serviceworker.js")
@@ -9,59 +11,149 @@ if (navigator.online && "serviceWorker" in navigator) {
     });
 }
 
+
+//Global variables
+
 const boardContainer = document.getElementById("boardContainer");
 const listsContainer = document.getElementById("listsContainer");
-
-const sidebar = document.getElementById("sidebar");
-const sidebarButton = document.getElementById("sidebarButton");
-const sidebarClose = document.getElementById("sidebarClose");
-
-const addListButton = document.getElementById("addListButton");
+const title = document.getElementById("boardTitle");
 
 const boardsList = document.getElementById("boardsList");
 const addBoardText = document.getElementById("addBoardText");
 const addBoardButton = document.getElementById("addBoardButton");
 
-const deleteButton = document.getElementById("deleteButton");
+const boardDeleteButton = document.getElementById("boardDeleteButton");
+
+const addListButton = document.getElementById("addListButton");
+
 const darkModeInput = document.getElementById("darkModeInput");
 
-const title = document.getElementById("boardTitle");
+const sidebar = document.getElementById("sidebar");
+const sidebarButton = document.getElementById("sidebarButton");
+const sidebarClose = document.getElementById("sidebarClose");
 
+
+let globalCounter = 0;
 let appData = {
   boards: [],
   currentBoard: 0,
 };
-let counter = 0;
+function currentLists() { return appData.boards[appData.currentBoard].lists; }
+function currentBoard() { return appData.boards[appData.currentBoard]; }
 
-setInterval(function () {
-  saveData();
-}, 5000);
-window.addEventListener("beforeunload", (event) => {
-  saveData();
+
+
+// Events
+
+addBoardText.addEventListener("keyup", (e) => {
+  if (e.code === "Enter") addBoard();
 });
 
-function currentLists() {
-  return appData.boards[appData.currentBoard].lists;
+addBoardButton.addEventListener("click", addBoard);
+
+
+boardDeleteButton.addEventListener("click", () => {
+  appData.boards.splice(appData.currentBoard, 1);
+  if (appData.currentBoard !== 0) {
+    appData.currentBoard--;
+  }
+
+  if (appData.boards.length === 0) {
+    let newBoard = new Board("Untitled Board", "b0");
+    appData.boards.push(newBoard);
+    appData.currentBoard = 0;
+  }
+
+  createBoardsList();
+  renderBoard(currentBoard());
+});
+
+addListButton.addEventListener("click", () => {
+  currentBoard().addList();
+  boardContainer.scrollTo({ left: boardContainer.scrollWidth });
+});
+
+
+
+darkModeInput.addEventListener("change", () => {
+  document.documentElement.classList.toggle("darkMode", darkModeInput.checked);
+  localStorage.setItem(
+    "darkMode",
+    darkModeInput.checked ? "enabled" : "disabled",
+  );
+});
+
+if (localStorage.getItem("darkMode") === "enabled") {
+  darkModeInput.checked = true;
+  document.documentElement.classList.add("darkMode");
 }
 
-function currentBoard() {
-  return appData.boards[appData.currentBoard];
+
+
+function toggleSidebar() {
+  if (sidebar.dataset.toggled === "true") {
+    sidebar.dataset.toggled = "false";
+
+    document.removeEventListener("click", listenClickOutside);
+  } else {
+    sidebar.dataset.toggled = "true";
+
+    setTimeout(() => {
+      document.addEventListener("click", listenClickOutside);
+    }, 300);
+  }
 }
 
-// ========= Functions ========= //
+sidebarButton.addEventListener("click", toggleSidebar);
+sidebarClose.addEventListener("click", toggleSidebar);
 
-function createBoardsList() {
-  boardsList.innerHTML = "";
-  for (let board of appData.boards) {
-    let boardTitle = document.createElement("li");
-    boardTitle.innerText = board.name;
-    boardTitle.id = board.id;
-    if (board.id === currentBoard().id) boardTitle.classList.add("active");
-    boardTitle.addEventListener("click", () => {
-      renderBoard(board);
-      createBoardsList();
-    });
-    boardsList.appendChild(boardTitle);
+function listenClickOutside(event) {
+  const withinBoundaries = event.composedPath().includes(sidebar);
+  if (!withinBoundaries && sidebar.style.width != "0px") {
+    toggleSidebar();
+  }
+}
+
+
+
+// Classes
+
+class Board {
+  constructor(name, id, tags = [], counter = 0) {
+    this.name = name;
+    this.id = id;
+    this.lists = [];
+    this.tags = tags;
+    this.counter = counter;
+  }
+
+  UniqueID() {
+    this.counter += 1;
+    return `${this.id}-` + this.counter.toString();
+  }
+
+  addList() {
+    let listTitle = "Untitled List";
+
+    let list = new List(listTitle, this.UniqueID(), this.id);
+    this.lists.push(list);
+
+    let listElement = list.createListElement();
+    listsContainer.appendChild(listElement);
+  }
+
+  addTag(tag) {
+    if (!this.tags.find((t) => t.name === tag.name)) {
+      this.tags.push(tag);
+    }
+  }
+
+  findTag(tagName) {
+    return this.tags.find((t) => t.name === tagName);
+  }
+
+  removeTag(tagName) {
+    this.tags = this.tags.filter((tag) => tag.name !== tagName);
   }
 }
 
@@ -95,105 +187,32 @@ function renderBoard(board) {
 
   renderAllLists();
 }
-
-function renderAllLists() {
-  for (let list of listsContainer.querySelectorAll(".taskList")) {
-    list.remove();
-  }
-
-  for (let list of currentLists()) {
-    let newListElement = list.generateElement();
-    listsContainer.appendChild(newListElement);
-  }
-
-  new Sortable(listsContainer, {
-    group: "lists",
-    animation: 150,
-    swapThreshold: 0.85,
-    handle: ".taskListHeader",
-
-    onEnd: function (evt) {
-      const { oldIndex, newIndex } = evt;
-
-      if (oldIndex !== newIndex) {
-        const movedList = currentLists().splice(oldIndex, 1)[0];
-        currentLists().splice(newIndex, 0, movedList);
-
-        saveData();
-      }
-    },
-  });
-}
-
-function renderList(listID) {
-  let list = currentLists().find((e) => e.id === listID);
-
-  if (!list) {
-    let listElement = document.getElementById(listID);
-    listElement.parentNode.removeChild(listElement);
-    return;
-  }
-
-  let listElement = document.getElementById(list.id);
-  if (listElement != null) {
-    let newListElement = list.generateElement();
-    listElement.parentNode.replaceChild(newListElement, listElement);
-  } else {
-    let newListElement = list.generateElement();
-    listsContainer.appendChild(newListElement);
+function createBoardsList() {
+  boardsList.innerHTML = "";
+  for (let board of appData.boards) {
+    let boardTitle = document.createElement("li");
+    boardTitle.innerText = board.name;
+    boardTitle.id = board.id;
+    if (board.id === currentBoard().id) boardTitle.classList.add("active");
+    boardTitle.addEventListener("click", () => {
+      renderBoard(board);
+      createBoardsList();
+    });
+    boardsList.appendChild(boardTitle);
   }
 }
-
 function addBoard() {
   let boardTitle = addBoardText.value;
   if (!boardTitle) boardTitle = "Unititled Board";
   addBoardText.value = "";
 
-  counter += 1;
-  let newBoard = new Board(boardTitle, "Board" + counter.toString());
+  globalCounter += 1;
+  let newBoard = new Board(boardTitle, "Board" + globalCounter.toString());
   appData.boards.push(newBoard);
   createBoardsList();
 }
 
-// ========= Classes ========== //
-class Board {
-  constructor(name, id, tags = [], counter = 0) {
-    this.name = name;
-    this.id = id;
-    this.lists = [];
-    this.tags = tags;
-    this.counter = counter;
-  }
 
-  UniqueID() {
-    this.counter += 1;
-    return `${this.id}-` + this.counter.toString();
-  }
-
-  addList() {
-    let listTitle = "Untitled List";
-
-    let list = new List(listTitle, this.UniqueID(), this.id);
-    this.lists.push(list);
-
-    let listElement = list.generateElement();
-    listsContainer.appendChild(listElement);
-  }
-
-  addTag(tag) {
-    if (!this.tags.find((t) => t.name === tag.name)) {
-      this.tags.push(tag);
-    }
-  }
-
-  findTag(tagName) {
-    return this.tags.find((t) => t.name === tagName);
-  }
-
-  removeTag(tagName) {
-    this.tags = this.tags.filter((tag) => tag.name !== tagName);
-  }
-}
 
 class List {
   constructor(name, id, parentBoardId) {
@@ -213,7 +232,7 @@ class List {
     renderList(this.id);
   }
 
-  renderTasks() {
+  createTaskElements() {
     let taskListElement = document.createElement("ul");
     taskListElement.id = "list-" + this.id;
 
@@ -310,7 +329,7 @@ class List {
     return taskListElement;
   }
 
-  generateElement() {
+  createListElement() {
     let listHeader = document.createElement("header");
     listHeader.classList.add("taskListHeader");
 
@@ -371,7 +390,7 @@ class List {
     listElement.classList.add("taskList");
     listElement.appendChild(listHeader);
     if (this.tasks) {
-      let taskListElement = this.renderTasks();
+      let taskListElement = this.createTaskElements();
       taskListElement.className = "taskListBody";
 
       listElement.appendChild(taskListElement);
@@ -381,6 +400,58 @@ class List {
     return listElement;
   }
 }
+
+function renderAllLists() {
+  for (let list of listsContainer.querySelectorAll(".taskList")) {
+    list.remove();
+  }
+
+  for (let list of currentLists()) {
+    let newListElement = list.createListElement();
+    listsContainer.appendChild(newListElement);
+  }
+
+  //Sortable.destroy(listsContainer);
+  listsContainer.Sortable.destroy();      // TODO need to destroy the sortable, thats the final bug. find a way to access listContiainer's sortabel (ideally dont store a varibale.)
+  new Sortable(listsContainer, {
+    group: "lists",
+    animation: 250,
+    swapThreshold: 0.70,
+    handle: ".taskListHeader",
+
+    onEnd: function (evt) {
+      const { oldIndex, newIndex } = evt;
+
+      if (oldIndex !== newIndex) {
+        const movedList = currentLists().splice(oldIndex, 1)[0];
+        currentLists().splice(newIndex, 0, movedList);
+
+        saveData();
+      }
+    },
+  });
+}
+function renderList(listID) {
+  let list = currentLists().find((e) => e.id === listID);
+
+  if (!list) {
+    let listElement = document.getElementById(listID);
+    console.log(listElement);
+    listElement.parentNode.removeChild(listElement);
+    return;
+  }
+
+  let listElement = document.getElementById(list.id);
+  if (listElement != null) {
+    let newListElement = list.createListElement();
+    listElement.parentNode.replaceChild(newListElement, listElement);
+  } else {
+    let newListElement = list.createListElement();
+    listsContainer.appendChild(newListElement);
+  }
+}
+
+
 
 class Task {
   constructor(title, body, id, tags, taskListId) {
@@ -572,75 +643,16 @@ class Task {
   }
 }
 
-// <=========== Other Events ============>
 
-addListButton.addEventListener("click", () => {
-  currentBoard().addList();
-  boardContainer.scrollTo({ left: boardContainer.scrollWidth });
+
+// Data Persistence
+
+setInterval(function () {
+  saveData();
+}, 5000);
+window.addEventListener("beforeunload", (event) => {
+  saveData();
 });
-
-addBoardText.addEventListener("keyup", (e) => {
-  if (e.code === "Enter") addBoard();
-});
-
-addBoardButton.addEventListener("click", addBoard);
-
-deleteButton.addEventListener("click", () => {
-  appData.boards.splice(appData.currentBoard, 1);
-  if (appData.currentBoard !== 0) {
-    appData.currentBoard--;
-  }
-
-  if (appData.boards.length === 0) {
-    let newBoard = new Board("Untitled Board", "b0");
-    appData.boards.push(newBoard);
-    appData.currentBoard = 0;
-  }
-
-  createBoardsList();
-  renderBoard(currentBoard());
-});
-
-darkModeInput.addEventListener("change", () => {
-  document.documentElement.classList.toggle("darkMode", darkModeInput.checked);
-  localStorage.setItem(
-    "darkMode",
-    darkModeInput.checked ? "enabled" : "disabled",
-  );
-});
-
-if (localStorage.getItem("darkMode") === "enabled") {
-  darkModeInput.checked = true;
-  document.documentElement.classList.add("darkMode");
-}
-
-// <========== Sidebar ===========>
-
-function toggleSidebar() {
-  if (sidebar.dataset.toggled === "true") {
-    sidebar.dataset.toggled = "false";
-
-    document.removeEventListener("click", listenClickOutside);
-  } else {
-    sidebar.dataset.toggled = "true";
-
-    setTimeout(() => {
-      document.addEventListener("click", listenClickOutside);
-    }, 300);
-  }
-}
-
-sidebarButton.addEventListener("click", toggleSidebar);
-sidebarClose.addEventListener("click", toggleSidebar);
-
-function listenClickOutside(event) {
-  const withinBoundaries = event.composedPath().includes(sidebar);
-  if (!withinBoundaries && sidebar.style.width != "0px") {
-    toggleSidebar();
-  }
-}
-
-/* < ========= Data Storage ============ > */
 
 async function saveData() {
   if (navigator.online) {
@@ -717,7 +729,5 @@ async function loadData() {
   createBoardsList();
   renderBoard(appData.boards[appData.currentBoard]);
 }
-
-//document.addEventListener("online", loadData());  // makes the loadData call twice if starting online
 
 loadData();
