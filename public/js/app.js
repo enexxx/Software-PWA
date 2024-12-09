@@ -109,6 +109,7 @@ function renderAllLists() {
   new Sortable(listsContainer, {
     group: "lists",
     animation: 150,
+    swapThreshold: 0.85,
     handle: ".taskListHeader",
 
     onEnd: function (evt) {
@@ -282,6 +283,7 @@ class List {
     new Sortable(taskListElement, {
       group: "tasks",
       animation: 150,
+      swapThreshold: 0.95,
       revertOnSpill: true,
       ghostClass: "ghostTask",
       chosenClass: "chosenTask",
