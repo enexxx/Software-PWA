@@ -1,9 +1,3 @@
-// run 'npm install' to instsall dependencies
-// run 'npx nodemon server.js' to start the server
-// please make sure you're autheticated with the detnsw website, else you may encounter a bug with connecting to fontawesome, making the page not work.
-
-
-
 import express from 'express';
 import sqlite3 from 'sqlite3';
 import bodyParser from 'body-parser';
@@ -11,7 +5,6 @@ import path from "path";
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { clear } from 'console';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
