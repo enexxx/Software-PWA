@@ -436,7 +436,7 @@ function renderList(listID) {
 
   if (!list) {
     let listElement = document.getElementById(listID);
-    console.log(listElement);
+    if (listElement == null) return;
     listElement.parentNode.removeChild(listElement);
     return;
   }

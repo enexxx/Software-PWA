@@ -412,8 +412,7 @@ button:hover {
     font-size:.85rem;
     font-weight:700;
     cursor:pointer;
-    color:var(--text2);
-    background-color:var(--list);
+    color: var(--text);
     padding:5px 10px;
     transition:transform .2s ease,background-color .2s ease
 }
