@@ -6,8 +6,8 @@
     --list:#f7f9ff;
     --border:#dbdde2;
     --task:#fbfcff;
-    --primary-color:#f597db;
-    --primary-hover:#f5d0f7;
+    --primary-color:#938fec;
+    --primary-hover:#ada9f0;
     --secondary-color:#afc9fb;
     --secondary-hover:#cfd7fe
 }
@@ -376,7 +376,7 @@ button:hover {
     
 button {
     background:var(--primary-color);
-    color:#fff;
+    color:var(--text);
     border:none;
     border-radius:8px;
     padding:.5rem 1rem;
