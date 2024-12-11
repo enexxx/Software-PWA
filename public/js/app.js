@@ -308,7 +308,7 @@ class List {
       chosenClass: "chosenTask",
 
       onStart: (evt) => {
-        document.body.classList.add("disableTaskHover"); // janky but it works
+        document.body.classList.add("disableTaskHover");
       },
       onEnd: (evt) => {
         document.body.classList.remove("disableTaskHover");
@@ -379,7 +379,6 @@ class List {
       let task = new Task("", "", currentBoard().UniqueID(), [], this.id);
       this.addTask(task);
       setTimeout(() => {
-        // messy fix but it works
         task.editTask();
       }, 0);
     });
@@ -494,7 +493,7 @@ class Task {
 
         renderAllLists();
         document.removeEventListener("click", listenClickOutside);
-        task.editTask(); //janky but it works
+        task.editTask();
       });
 
       let tagRemoveButton = document.createElement("i");
@@ -511,7 +510,6 @@ class Task {
         taskTags.removeChild(tagElement);
       });
 
-      //tagElement.appendChild(tagInput);
       tagElement.appendChild(tagColourPicker);
       tagElement.appendChild(tagRemoveButton);
     };
@@ -669,7 +667,7 @@ async function saveData() {
     }
   } else {
     window.localStorage.removeItem("appData");
-    window.localStorage.setItem("appData", JSON.stringify(appData)); //for offline parity
+    window.localStorage.setItem("appData", JSON.stringify(appData));
   }
 }
 
