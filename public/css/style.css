@@ -44,7 +44,25 @@ p {
     word-break:break-all;
     text-overflow:ellipsis
 }
+
+button:hover {
+    background:var(--primary-hover);
+    transform:scale(1.05)
+}
     
+button {
+    background:var(--primary-color);
+    color:var(--text);
+    border:none;
+    border-radius:8px;
+    padding:.5rem 1rem;
+    font-size:1rem;
+    cursor:pointer;
+    box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    transition:all .3s ease
+}
+
+/* sidebar */
 #sidebar {
     height:100%;
     width:0;
@@ -54,11 +72,10 @@ p {
     top:0;
     left:0;
     background-color:var(--bg);
-    overflow-x:hidden;
+    overflow:hidden;
     transition:width .5s;
     padding-top:4rem;
     white-space:nowrap;
-    overflow:hidden
 }
     
 #sidebar[data-toggled="true"] {
@@ -67,14 +84,32 @@ p {
     padding:.5rem
 }
     
- #sidebar p {
+#sidebar p {
     font-size:1.5rem;
     color:var(--text);
     display:block;
     transition:.3s;
     text-align:center
 }
+
+#sidebar #sidebarClose {
+    color:var(--text);
+    cursor:pointer;
+    position:absolute;
+    top:0;
+    right:25px;
+    font-size:2rem;
+    margin-left:50px
+}
     
+#sidebarSearchField {
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+    gap:.5rem
+}
+
+/* Sidebar Board List */
 #sidebar > ul {
     list-style:none;
     padding-left:0
@@ -107,23 +142,9 @@ p {
     border:1px solid var(--primary-hover)
 }
 
-#sidebar #sidebarClose {
-    color:var(--text);
-    cursor:pointer;
-    position:absolute;
-    top:0;
-    right:25px;
-    font-size:2rem;
-    margin-left:50px
-}
-    
-#sidebarSearchField {
-    display:flex;
-    align-items:center;
-    flex-direction:column;
-    gap:.5rem
-}
-    
+
+
+/* Board */    
 #boardContainer {
     display:flex;
     overflow-x:auto;
@@ -136,421 +157,21 @@ p {
     scroll-behavior:smooth;
     background-color:var(--board)
 }
-    
-#listsContainer {
-    display:flex;
-    gap:1rem;
-    flex-wrap:nowrap
-}
-    
-#addListButton {
-    display:inline-flex;
-    justify-content:center;
-    align-items:center;
-    background-color:var(--task);
-    border:1px solid var(--border);
-    border-radius:8px;
-    font-size:1.5rem;
-    cursor:pointer;
-    flex-shrink:0
-}
-    
 #boardContainer::-webkit-scrollbar {
     height:13px
-}
-    
+} 
 #boardContainer::-webkit-scrollbar-track {
     background-color:var(--list)
- }
-    
+}  
 #boardContainer::-webkit-scrollbar-thumb {
     background-color:var(--primary-color);
     border-radius:4px
 }
-    
 #boardContainer::-webkit-scrollbar-thumb:hover {
     background-color:var(--primary-hover)
 }
-    
-.taskList {
-    flex:0 0 300px;
-    width:300px
-}
-    
-.taskList > header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background-color:var(--list);
-    border:1px solid var(--border);
-    border-radius:8px 8px 0 0;
-    font-size:12px;
-    padding:1rem
-}
-    
-.taskList header > h2 {
-    display:inline-block
-}
-    
-.taskList header > i {
-    display:inline-block;
-    margin-right:.2rem
-}
-    
-.taskList header > button {
-    background:transparent;
-    color:var(--light-grey);
-    font-size:18px;
-    border:0;
-    cursor:pointer
-}
-    
-.taskListBody {
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    gap:.5rem;
-    padding:.5rem;
-    background-color:var(--list);
-    max-height:calc(80dvh - 80px);
-    overflow-y:auto;
-    overflow-x:hidden;
-    border-left:1px solid var(--border);
-    border-right:1px solid var(--border)
- }
-    
-.taskList footer {
-    background-color:var(--list);
-    border:1px solid var(--border);
-    border-radius:0 0 8px 8px;
-    width:100%
- }
-    
-.taskList footer:hover {
-    opacity:80%
- }
-    
-.addTaskButton {
-    font-size:13px;
-    text-align:center;
-    width:100%;
-    opacity:50%;
-    padding:1rem
-}
-    
-.addListButton {
-    background:none;
-    border:none;
-    font-size:13px;
-    padding:1rem
-}
-    
-.task {
-    cursor:move;
-    list-style:none;
-    background-color:var(--task);
-    padding:.7rem;
-    border-radius:8px;
-    width:100%;
-    border:2px solid var(--border)
-}
-    
-.task p {
-    font-size:15px;
-    white-space:initial
-}
-    
-.taskBody {
-    margin-top:.5rem
-}
-    
-.taskHead {
-    margin-bottom:.7rem
-}
-    
-.taskTitleContainer {
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between
-}
-    
-.taskTitle {
-    font-weight:bolder
-}
-    
-.taskButtons {
-    display:inline-flex;
-    gap:.4rem
-}
-    
-.taskEditButton,
-.taskDeleteButton,
-.listDeleteButton {
-    opacity:0;
-    background-color:transparent;
-    border:0;
-    font-size:15px;
-    pointer-events:none;
-    transition:opacity .3s ease-in-out
-}
-    
-.task:hover .taskEditButton,
-.task:hover .taskDeleteButton,
-.taskList header:hover .listDeleteButton {
-    opacity:50%;
-    pointer-events:auto
-}
-    
-@media (hover: none) and (pointer: coarse) {
-    .taskEditButton,
-    .taskDeleteButton,
-    .listDeleteButton {
-    opacity:0;
-    pointer-events:none
-}
-    
-.task:active .taskEditButton,
-.task:active .taskDeleteButton,
-.taskList header:active .listDeleteButton {
-    opacity:50%;
-    pointer-events:auto
-}
-}
-    
-.taskList header,
-.taskListBody,
-.taskList footer {
-    box-shadow:0 4px 8px rgba(0,0,0,0.2)
-}
-    
-.task {
-    transition:all .3s
-}
-    
-.task:hover {
-    border:2px solid var(--primary-color);
-    box-shadow:0 4px 6px rgba(0,0,0,0.1);
-    transform:translateY(-2px)
-}
-    
-.ghostTask {
-    border:2px solid var(--primary-color);
-    box-shadow:0 4px 6px rgba(0,0,0,0.2);
-    background-color:var(--white);
-    opacity:.6;
-    transform:scale(0.95)
-}
-    
-body.disableTaskHover .task:hover {
-    border:2px solid var(--border)!important;
-    box-shadow:none!important;
-    transform:none!important
-    }
-    
-body.disableTaskHover .task:hover .taskEditButton,
-body.disableTaskHover .task:hover .taskDeleteButton {
-    opacity:0!important;
-    pointer-events:none!important
-}
-    
-.tagButton {
-    font-size:1rem;
-    color:var(--text);
-    background-color:var(--primary-color);
-    border:none;
-    border-radius:4px;
-    padding:.5rem;
-    cursor:pointer;
-    transition:background-color 0.3s,transform .2s
-}
-    
-.tagButton:hover {
-    background-color:var(--primary-hover);
-    transform:scale(1.05)
-}
-    
-button:hover {
-    background-color:var(--secondary-hover)
-}
-    
-button {
-    background:var(--primary-color);
-    color:var(--text);
-    border:none;
-    border-radius:8px;
-    padding:.5rem 1rem;
-    font-size:1rem;
-    cursor:pointer;
-    box-shadow:0 4px 6px rgba(0,0,0,0.1);
-    transition:all .3s ease
-}
-    
-button:hover {
-    background:var(--primary-hover);
-    transform:scale(1.05)
- }
-    
-.newTagOption {
-    display:flex;
-    flex-direction:row;
-    align-items:center;
-    gap:.5rem
-}
-    
-.taskTags {
-    display:flex;
-    flex-wrap:wrap;
-    gap:.5rem;
-    margin-top:.5rem
-}
-    
-.taskTag {
-    display:inline-flex;
-    align-items:center;
-    border-radius:12px;
-    font-size:.85rem;
-    font-weight:700;
-    cursor:pointer;
-    color: var(--text);
-    padding:5px 10px;
-    transition:transform .2s ease,background-color .2s ease
-}
-    
-.taskTag:hover {
-    transform:scale(1.1)
-}
-    
-.tagColourPicker[type="color" i] {
-    border-radius:50%;
-    inline-size:30px;
-    block-size:30px;
-    padding:3px;
-    border:none;
-    background-color:transparent
-}
-    
-.tagRemoveButton {
-    font-size:1rem;
-    color:var(--text2);
-    background:none;
-    border:none;
-    cursor:pointer;
-    transition:color .2s
-}
-    
-.tagRemoveButton:hover {
-    color:var(--primary-color)
-}
-    
-.newTagOption {
-    display:flex;
-    align-items:center;
-    gap:.5rem;
-    margin:.5rem 0
-}
-    
-.tagDropdown {
-    border:1px solid var(--border);
-    background:rgba(0,0,0,0.1);
-    padding:.5rem;
-    flex-wrap:wrap;
-    gap:.5rem
-}
-    
-.dropdownTagInput {
-    flex:1;
-    border:1px solid var(--border);
-    background:rgba(0,0,0,0.1);
-    color:var(--text);
-    border-radius:4px;
-    font-size:.85rem;
-    transition:border-color 0.3s,box-shadow .3s
-}
-    
-.dropdownTagInput:focus {
-    border-color:var(--primary-color);
-    box-shadow:0 0 5px var(--primary-color);
-    outline:none
-}
-    
-.dropdownTagColour[type="color" i] {
-    border-radius:50%;
-    inline-size:30px;
-    block-size:30px;
-    padding:3px;
-    border:none;
-    background-color:transparent
-}
-    
-.newTagButton {
-    font-size:1rem;
-    color:var(--text);
-    background-color:var(--primary-color);
-    border:none;
-    border-radius:4px;
-    padding:.5rem;
-    cursor:pointer;
-    transition:background-color 0.3s,transform .2s
-}
-    
-.newTagButton:hover {
-    background-color:var(--primary-hover);
-    transform:scale(1.05)
-}
-    
-.taskTitleInput,
-.taskBodyInput {
-    border:none;
-    outline:none;
-    resize:none;
-    background:rgba(0,0,0,0.1);
-    color:var(--text);
-    width:100%;
-    padding:0;
-    transition:background-color .2s ease
-}
-    
-.taskTitleInput:focus,
-.taskBodyInput:focus {
-    border-radius:4px;
-    padding:.2rem
-}
-    
-.taskListBody::-webkit-scrollbar {
-    width:8px
-}
-    
-.taskListBody::-webkit-scrollbar-track {
-    background-color:var(--task)
-}
-    
-.taskListBody::-webkit-scrollbar-thumb {
-    background-color:var(--primary-color);
-    border-radius:4px
-}
-    
-.taskListBody::-webkit-scrollbar-thumb:hover {
-    background-color:var(--primary-hover)
-}
-    
-input,
-textarea {
-    border:1px solid var(--text);
-    border-radius:8px;
-    padding:.5rem;
-    width:100%;
-    font-size:1rem;
-    transition:all .3s
-}
-    
-input:focus,
-textarea:focus {
-    border-color:var(--primary-color);
-    box-shadow:0 0 4px var(--primary-color);
-    outline:none
-}
-    
+
+   
 #appContainer > header {
     background:var(--bg);
     border-bottom:1px solid var(--primary-color);
@@ -588,6 +209,349 @@ textarea:focus {
     
 #appContainer > header button:hover {
     background:var(--secondary-hover)
+}
+
+#listsContainer {
+    display:flex;
+    gap:1rem;
+    flex-wrap:nowrap
+}
+#addListButton {
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+    background-color:var(--task);
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:1.5rem;
+    cursor:pointer;
+    flex-shrink:0
+}
+    
+
+/* Lists */
+.taskList {
+    flex:0 0 300px;
+    width:300px
+}
+    
+.taskList > header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background-color:var(--list);
+    border:1px solid var(--border);
+    border-radius:8px 8px 0 0;
+    font-size:12px;
+    padding:1rem
+}
+.taskList header > h2 {
+    display:inline-block
+}
+.taskList header > i {
+    display:inline-block;
+    margin-right:.2rem
+}
+.taskList header > button {
+    background:transparent;
+    color:var(--light-grey);
+    font-size:18px;
+    border:0;
+    cursor:pointer
+}
+
+.taskListBody {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:.5rem;
+    padding:.5rem;
+    background-color:var(--list);
+    max-height:calc(80dvh - 80px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    border-left:1px solid var(--border);
+    border-right:1px solid var(--border)
+ }
+    
+.taskList footer {
+    background-color:var(--list);
+    border:1px solid var(--border);
+    border-radius:0 0 8px 8px;
+    width:100%
+ }
+.taskList footer:hover {
+    opacity:80%
+ }
+.addTaskButton {
+    font-size:13px;
+    text-align:center;
+    width:100%;
+    opacity:50%;
+    padding:1rem
+}
+
+.taskListBody::-webkit-scrollbar {
+    width:8px
+}
+.taskListBody::-webkit-scrollbar-track {
+    background-color:var(--task)
+}
+.taskListBody::-webkit-scrollbar-thumb {
+    background-color:var(--primary-color);
+    border-radius:4px
+}
+.taskListBody::-webkit-scrollbar-thumb:hover {
+    background-color:var(--primary-hover)
+}
+
+
+/* Tasks */
+.task {
+    cursor:move;
+    list-style:none;
+    background-color:var(--task);
+    padding:.7rem;
+    border-radius:8px;
+    width:100%;
+    border:2px solid var(--border);
+    transition:all .3s
+}
+.task:hover {
+    border:2px solid var(--primary-color);
+    box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    transform:translateY(-2px)
+}
+.task p {
+    font-size:15px;
+    white-space:initial
+}
+.taskHead {
+    margin-bottom:.7rem
+}    
+.taskTitleContainer {
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between
+}
+    
+.taskTitle {
+    font-weight:bolder
+}
+    
+.taskButtons {
+    display:inline-flex;
+    gap:.4rem
+}
+
+.taskBody {
+    margin-top:.5rem
+}
+
+/* Task Dragging */
+.ghostTask {
+    border:2px solid var(--primary-color);
+    box-shadow:0 4px 6px rgba(0,0,0,0.2);
+    background-color:var(--white);
+    opacity:.6;
+    transform:scale(0.95)
+}
+body.disableTaskHover .task:hover {
+    border:2px solid var(--border)!important;
+    box-shadow:none!important;
+    transform:none!important
+}
+body.disableTaskHover .task:hover .taskEditButton,
+body.disableTaskHover .task:hover .taskDeleteButton {
+    opacity:0!important;
+    pointer-events:none!important
+}
+
+/* Buttons */
+.taskEditButton,
+.taskDeleteButton,
+.listDeleteButton {
+    opacity:0;
+    background-color:transparent;
+    border:0;
+    font-size:15px;
+    pointer-events:none;
+    transition:opacity .3s ease-in-out
+}
+.task:hover .taskEditButton,
+.task:hover .taskDeleteButton,
+.taskList header:hover .listDeleteButton {
+    opacity:50%;
+    pointer-events:auto
+}
+@media (hover: none) and (pointer: coarse) {
+    .taskEditButton,
+    .taskDeleteButton,
+    .listDeleteButton {
+        opacity:0;
+        pointer-events:none
+    }
+    .task:active .taskEditButton,
+    .task:active .taskDeleteButton,
+    .taskList header:active .listDeleteButton {
+        opacity:50%;
+        pointer-events:auto
+    }
+}
+    
+.taskList header,
+.taskListBody,
+.taskList footer {
+    box-shadow:0 4px 8px rgba(0,0,0,0.2)
+}
+
+
+/* Task Tags */
+.tagButton {
+    font-size:1rem;
+    color:var(--text);
+    background-color:var(--primary-color);
+    border:none;
+    border-radius:4px;
+    padding:.5rem;
+    cursor:pointer;
+    transition:background-color 0.3s,transform .2s
+}
+.tagButton:hover {
+    background-color:var(--primary-hover);
+    transform:scale(1.05)
+}
+.taskTags {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem;
+    margin-top:.5rem
+}
+.taskTag {
+    display:inline-flex;
+    align-items:center;
+    border-radius:12px;
+    font-size:.85rem;
+    font-weight:700;
+    cursor:pointer;
+    color: var(--text);
+    padding:5px 10px;
+    transition:transform .2s ease,background-color .2s ease
+}
+.taskTag:hover {
+    transform:scale(1.1)
+}
+
+/* Tag Editing */
+.tagColourPicker[type="color" i] {
+    border-radius:50%;
+    inline-size:30px;
+    block-size:30px;
+    padding:3px;
+    border:none;
+    background-color:transparent
+}
+.tagRemoveButton {
+    font-size:1rem;
+    color:var(--text2);
+    background:none;
+    border:none;
+    cursor:pointer;
+    transition:color .2s
+}
+.tagRemoveButton:hover {
+    color:var(--primary-color)
+}
+
+.tagDropdown {
+    border:1px solid var(--border);
+    background:rgba(0,0,0,0.1);
+    padding:.5rem;
+    flex-wrap:wrap;
+    gap:.5rem
+}
+.dropdownTagInput {
+    flex:1;
+    border:1px solid var(--border);
+    background:rgba(0,0,0,0.1);
+    color:var(--text);
+    border-radius:4px;
+    font-size:.85rem;
+    transition:border-color 0.3s,box-shadow .3s
+}
+.dropdownTagInput:focus {
+    border-color:var(--primary-color);
+    box-shadow:0 0 5px var(--primary-color);
+    outline:none
+}
+.dropdownTagColour[type="color" i] {
+    border-radius:50%;
+    inline-size:30px;
+    block-size:30px;
+    padding:3px;
+    border:none;
+    background-color:transparent
+}
+
+.newTagOption {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:.5rem;
+    margin:.5rem 0
+}
+.newTagButton {
+    font-size:1rem;
+    color:var(--text);
+    background-color:var(--primary-color);
+    border:none;
+    border-radius:4px;
+    padding:.5rem;
+    cursor:pointer;
+    transition:background-color 0.3s,transform .2s
+}
+.newTagButton:hover {
+    background-color:var(--primary-hover);
+    transform:scale(1.05)
+}
+    
+
+
+/* Other */
+.taskTitleInput,
+.taskBodyInput {
+    border:none;
+    outline:none;
+    resize:none;
+    background:rgba(0,0,0,0.1);
+    color:var(--text);
+    width:100%;
+    padding:0;
+    transition:background-color .2s ease
+}
+    
+.taskTitleInput:focus,
+.taskBodyInput:focus {
+    border-radius:4px;
+    padding:.2rem
+}
+    
+input,
+textarea {
+    border:1px solid var(--text);
+    border-radius:8px;
+    padding:.5rem;
+    width:100%;
+    font-size:1rem;
+    transition:all .3s
+}
+    
+input:focus,
+textarea:focus {
+    border-color:var(--primary-color);
+    box-shadow:0 0 4px var(--primary-color);
+    outline:none
 }
     
 #darkModeSwitch {
@@ -677,6 +641,7 @@ textarea:focus {
 .editableInput:focus {
     background-color:rgba(0,0,0,0.2)
 }
+
     
 .loadingSpinner {
     border:4px solid var(--text2);
@@ -686,7 +651,6 @@ textarea:focus {
     height:30px;
     animation:spin 1s linear infinite
 }
-    
 @keyframes spin {
     0% {
         transform:rotate(0deg)
@@ -696,7 +660,9 @@ textarea:focus {
         transform:rotate(360deg)
     }
 }
-    
+
+
+/* Mobile */
 @media (max-width: 768px) {
     .taskListBody {
         max-height:calc(70dvh - 80px)
