@@ -411,8 +411,8 @@ function renderAllLists() {
     listsContainer.appendChild(newListElement);
   }
 
-  //Sortable.destroy(listsContainer);
-  listsContainer.Sortable.destroy();      // TODO need to destroy the sortable, thats the final bug. find a way to access listContiainer's sortabel (ideally dont store a varibale.)
+  let sortableInstance = Sortable.get(listsContainer);
+  if (sortableInstance) { sortableInstance.destroy(); }
   new Sortable(listsContainer, {
     group: "lists",
     animation: 250,
