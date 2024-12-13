@@ -581,7 +581,7 @@ class Task {
         createTagEditables(tagElement, this);
         taskTags.insertBefore(
           tagElement,
-          taskTags.childNodes[taskTags.childNodes.length - 1],
+          taskTags.childNodes[taskTags.childNodes.length - 2],
         );
       }
     });
