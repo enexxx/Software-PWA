@@ -1,7 +1,7 @@
 # How to run:
 
 run 'npm install' to instsall dependencies  
-run 'npx nodemon server.js' to start the server. (You can also run index.html directly with working data persistence if you wish, just ignore the CORS error.)  
+run 'npx nodemon server.js' to start the server. (You can also run index.html directly with working data persistence if you wish, just ignore the CORS error. However you will not be able to install as a PWA with this method, so it is recommened to run the server.)  
 - If you're on a school connection, please make sure you're autheticated, else you may not be able to connect to fontawesome for the icons, making the page not function as intended.  
 
 
