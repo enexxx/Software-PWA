@@ -178,7 +178,8 @@ function renderBoard(board) {
     title.replaceWith(input);
 
     let save = () => {
-      currentBoard().name = input.value;
+      if (input.value.length === 0) input.value = "Untitled Board";
+      currentBoard().name = input.value;      
       document.title = 'Kanban | ' + input.value;
       title.innerText = input.value;
       input.replaceWith(title);
@@ -367,8 +368,8 @@ class List {
       listTitle.replaceWith(input);
 
       let save = () => {
+        if (input.value.length === 0) input.value = "Untitled List";
         this.name = input.value;
-        if (this.name.length === 0) this.name = "Untitled List";
         renderList(this.id);
       };
 
