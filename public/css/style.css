@@ -112,9 +112,24 @@ button {
 /* Sidebar Board List */
 #sidebar > ul {
     list-style:none;
-    padding-left:0
- }
-    
+    padding-left:0;
+    max-height: 80vh;
+    overflow: auto;
+}
+#sidebar > ul::-webkit-scrollbar {
+    width: 5px;
+} 
+#sidebar > ul::-webkit-scrollbar-track {
+    background-color:var(--list)
+}  
+#sidebar > ul::-webkit-scrollbar-thumb {
+    background-color:var(--primary-color);
+    border-radius:4px
+}
+#sidebar > ul::-webkit-scrollbar-thumb:hover {
+    background-color:var(--primary-hover)
+}
+
 #sidebar > ul > li {
     font-size:1rem;
     color:var(--text);
@@ -125,13 +140,13 @@ button {
     margin-bottom:1rem;
     border-radius:.5rem;
     white-space:nowrap;
-    overflow:hidden;
+    overflow: hidden;
     text-overflow:ellipsis
- }
+}
     
 #sidebar > ul > li.active {
     box-shadow:3px 3px var(--primary-color)
- }
+}
     
 #sidebar > ul > li.active:hover {
     box-shadow:3px 3px var(--primary-hover)
@@ -141,7 +156,6 @@ button {
     cursor:pointer;
     border:1px solid var(--primary-hover)
 }
-
 
 
 /* Board */    
