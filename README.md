@@ -1,4 +1,4 @@
-### How to run:
+# How to run:
 
 run 'npm install' to instsall dependencies  
 run 'npx nodemon server.js' to start the server. (You can also run index.html directly with working data persistence if you wish, just ignore the CORS error.)  
@@ -6,7 +6,7 @@ run 'npx nodemon server.js' to start the server. (You can also run index.html di
 
 
 
-### How to use:
+# How to use:
 
 This is a Kanban / 'To-do list' Progessive Web App. You can create boards, which contian lists of tasks.  
 
