@@ -48,6 +48,7 @@ function currentBoard() { return appData.boards[appData.currentBoard]; }
 addBoardText.addEventListener("keyup", (e) => {
   if (e.code === "Enter") addBoard();
 });
+addBoardText.maxLength = 64;
 
 addBoardButton.addEventListener("click", addBoard);
 
