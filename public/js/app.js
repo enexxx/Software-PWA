@@ -74,18 +74,22 @@ addListButton.addEventListener("click", () => {
 });
 
 
+if (!localStorage.getItem("darkMode") && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  localStorage.setItem("darkMode", "enabled");
+}
 
 darkModeInput.addEventListener("change", () => {
   document.documentElement.classList.toggle("darkMode", darkModeInput.checked);
-  localStorage.setItem(
-    "darkMode",
-    darkModeInput.checked ? "enabled" : "disabled",
-  );
+  localStorage.setItem("darkMode", darkModeInput.checked ? "enabled" : "disabled");
 });
 
 if (localStorage.getItem("darkMode") === "enabled") {
   darkModeInput.checked = true;
   document.documentElement.classList.add("darkMode");
+}
+else {
+  darkModeInput.checked = false;
+  document.documentElement.classList.remove("darkMode");
 }
 
 
@@ -282,7 +286,20 @@ class List {
         let tagElement = document.createElement("span");
         tagElement.id = "tag-" + task.id;
         tagElement.classList.add("taskTag");
-        tagElement.innerText = tag.name;
+
+        let tagText = document.createElement('span');
+        tagText.classList.add('tagText');
+        tagText.textContent = tag.name;
+
+        let tagColour = tag.colour.replace('#', '');
+        let r = parseInt(tagColour.slice(0, 2), 16);
+        let g = parseInt(tagColour.slice(2, 4), 16);
+        let b = parseInt(tagColour.slice(4, 6), 16);
+        let luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        luminance > 0.5 ? tagText.style.color = 'black' : tagText.style.color = 'white';
+
+        tagElement.appendChild(tagText);
+
         tagElement.style.backgroundColor = tag.colour;
 
         taskTags.appendChild(tagElement);
@@ -481,7 +498,7 @@ class Task {
     let taskTags = taskElement.querySelector(".taskTags");
 
     let createTagEditables = function (tagElement, task) {
-      let tagName = tagElement.textContent;
+      let tagName = tagElement.querySelector('.tagText').textContent;
       let tag = currentBoard().findTag(tagName);
 
       let tagColourPicker = document.createElement("input");
@@ -513,10 +530,21 @@ class Task {
       tagElement.appendChild(tagColourPicker);
       tagElement.appendChild(tagRemoveButton);
     };
-
     for (let tagElement of taskTags.childNodes) {
       createTagEditables(tagElement, this);
     }
+
+    let setTagColour = function (tagText, colour) {
+      let tagColour = colour.replace('#', '');
+
+      let r = parseInt(tagColour.slice(0, 2), 16);
+      let g = parseInt(tagColour.slice(2, 4), 16);
+      let b = parseInt(tagColour.slice(4, 6), 16);
+
+      let luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      luminance > 0.5 ? tagText.style.color = 'black' : tagText.style.color = 'white';
+    }
+
 
     let tagDropdown = document.createElement("ul");
     tagDropdown.classList.add("tagDropdown");
@@ -526,7 +554,13 @@ class Task {
     for (let tag of boardTags) {
       let tagElement = document.createElement("li");
       tagElement.classList.add("taskTag");
-      tagElement.innerText = tag.name;
+
+      let tagText = document.createElement('span');
+      tagText.classList.add('tagText');
+      tagText.textContent = tag.name;
+      setTagColour(tagText, tag.colour);
+      tagElement.appendChild(tagText);
+
       tagElement.style.backgroundColor = tag.colour;
       tagElement.addEventListener("click", () => {
         if (this.tags.includes(tag.name) != true) {
@@ -576,12 +610,18 @@ class Task {
 
         let tagElement = document.createElement("span");
         tagElement.classList.add("taskTag");
-        tagElement.innerText = tagName;
+
+        let tagText = document.createElement('span');
+        tagText.classList.add('tagText');
+        tagText.textContent = tagName;
+        setTagColour(tagText, tagColour);
+        tagElement.appendChild(tagText);
+
         tagElement.style.backgroundColor = tagColour;
         createTagEditables(tagElement, this);
         taskTags.insertBefore(
           tagElement,
-          taskTags.childNodes[taskTags.childNodes.length - 1],
+          taskTags.childNodes[taskTags.childNodes.length - 2],
         );
       }
     });

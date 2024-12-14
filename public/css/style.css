@@ -419,7 +419,6 @@ body.disableTaskHover .task:hover .taskDeleteButton {
     transition:background-color 0.3s,transform .2s
 }
 .tagButton:hover {
-    background-color:var(--primary-hover);
     transform:scale(1.05)
 }
 .taskTags {
