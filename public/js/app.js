@@ -653,7 +653,7 @@ class Task {
       if (this.title.length === 0) this.title = "Untitled Task";
       this.body = bodyInput.value;
       renderList(this.taskListId);
-      document.removeEventListener("click", listenClickOutside);
+      document.removeEventListener("mousedown", listenClickOutside);
     };
 
     function listenClickOutside(e) {
@@ -663,7 +663,7 @@ class Task {
       }
     }
 
-    document.addEventListener("click", listenClickOutside);
+    document.addEventListener("mousedown", listenClickOutside);
 
     window.addEventListener("beforeunload", () => {
       save();
