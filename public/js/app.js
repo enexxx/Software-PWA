@@ -321,7 +321,6 @@ class List {
       group: "tasks",
       animation: 150,
       swapThreshold: 0.95,
-      revertOnSpill: true,
       ghostClass: "ghostTask",
       chosenClass: "chosenTask",
 
@@ -360,7 +359,7 @@ class List {
       input.value = listTitle.textContent;
       input.classList.add("listTitle", "editableInput");
       input.placeholder = "List Title";
-      input.maxLength = 128;
+      input.maxLength = 25;
 
       let style = window.getComputedStyle(listTitle);
       input.style.fontSize = style.fontSize;
